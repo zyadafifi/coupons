@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { hasSubmittedLead } from '@/hooks/useLeads';
+import { isAdminEnabled } from '@/config/env';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
 }
 
 // Routes that should skip the onboarding check
-const EXCLUDED_ROUTES = ['/onboarding', '/admin'];
+// Admin routes are only excluded when admin is enabled
+const EXCLUDED_ROUTES = isAdminEnabled() 
+  ? ['/onboarding', '/admin'] 
+  : ['/onboarding'];
 
 export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const navigate = useNavigate();

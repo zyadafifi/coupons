@@ -101,6 +101,7 @@ function firestoreCategoryToApp(fc: FirestoreCategory): Category {
 }
 
 // Hook to get active coupons for user app with resolved store/category data
+// Uses real-time listeners (onSnapshot) for automatic updates when admin changes data
 export function useActiveCoupons(countryId?: string) {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [storesMap, setStoresMap] = useState<Map<string, FirestoreStore>>(new Map());

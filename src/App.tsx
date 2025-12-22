@@ -2,22 +2,25 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
-import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
-import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import { OnboardingGuard } from "@/components/layout/OnboardingGuard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useStatusBar } from "@/hooks/useStatusBar";
 import { useSplashScreen } from "@/hooks/useSplashScreen";
+import { isAdminEnabled } from "@/config/env";
 import Home from "./pages/Home";
 import CouponDetail from "./pages/CouponDetail";
 import Favorites from "./pages/Favorites";
 import Notifications from "./pages/Notifications";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
+import Onboarding from "./pages/Onboarding";
+import { PushNotificationHandler } from "./components/PushNotificationHandler";
 
-// Admin Pages
+// Conditionally import admin components only if admin is enabled
+import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
+import { AdminProtectedRoute } from "@/components/admin/AdminProtectedRoute";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCountries from "./pages/admin/AdminCountries";
@@ -27,8 +30,9 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminNotifications from "./pages/admin/AdminNotifications";
-import Onboarding from "./pages/Onboarding";
-import { PushNotificationHandler } from "./components/PushNotificationHandler";
+
+// Component to redirect admin routes to home when admin is disabled
+const AdminRedirect = () => <Navigate to="/" replace />;
 
 const queryClient = new QueryClient();
 
@@ -48,72 +52,81 @@ const App = () => {
               <PushNotificationHandler />
               <OnboardingGuard>
                 <Routes>
-                  {/* Admin Routes */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
-                  <Route
-                    path="/admin"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminDashboard />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/countries"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminCountries />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/categories"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminCategories />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/stores"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminStores />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/coupons"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminCoupons />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/leads"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminLeads />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/settings"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminSettings />
-                      </AdminProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/notifications"
-                    element={
-                      <AdminProtectedRoute>
-                        <AdminNotifications />
-                      </AdminProtectedRoute>
-                    }
-                  />
+                  {/* Admin Routes - Only available when VITE_ENABLE_ADMIN=true */}
+                  {isAdminEnabled() ? (
+                    <>
+                      <Route path="/admin/login" element={<AdminLogin />} />
+                      <Route
+                        path="/admin"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminDashboard />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/countries"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminCountries />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/categories"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminCategories />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/stores"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminStores />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/coupons"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminCoupons />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/leads"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminLeads />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/settings"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminSettings />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/notifications"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminNotifications />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                    </>
+                  ) : (
+                    <>
+                      {/* Redirect all admin routes to home when admin is disabled */}
+                      <Route path="/admin/*" element={<AdminRedirect />} />
+                    </>
+                  )}
 
                   {/* Onboarding */}
                   <Route path="/onboarding" element={<Onboarding />} />
