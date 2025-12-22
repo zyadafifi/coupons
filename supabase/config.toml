@@ -1,0 +1,7 @@
+project_id = "dfrbffgjlemedvkjehlp"
+
+[functions.send-push-notification]
+verify_jwt = false
+
+[functions.get-admin-notifications]
+verify_jwt = false

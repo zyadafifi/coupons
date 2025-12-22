@@ -1,0 +1,136 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   DOWNLOAD FIREBASE CONFIG - VISUAL GUIDE                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 WHAT I'VE DONE FOR YOU:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Created a TEMPLATE file at: android/app/google-services.json
+✅ Created detailed instructions: HOW_TO_DOWNLOAD_FIREBASE_CONFIG.md
+✅ Updated .gitignore to protect your Firebase config
+✅ Synced the Android project
+
+⚠️  IMPORTANT: The template file contains placeholder values. You MUST replace it
+    with the real file from Firebase Console for push notifications to work!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 QUICK STEPS TO GET THE REAL FILE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Open Firebase Console
+┌────────────────────────────────────────────────────────────────────────────┐
+│  🌐 Go to: https://console.firebase.google.com/                           │
+│  📂 Click on project: "saving-b35f3"                                       │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 2: Navigate to Project Settings
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ⚙️  Click the gear icon next to "Project Overview"                        │
+│  📋 Click "Project settings"                                               │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 3: Find Your Apps Section
+┌────────────────────────────────────────────────────────────────────────────┐
+│  📱 Scroll down to "Your apps" section                                     │
+│  🔍 Look for Android app with package: com.coupons.app                     │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 4a: If Android App EXISTS
+┌────────────────────────────────────────────────────────────────────────────┐
+│  📥 Click "Download google-services.json"                                  │
+│  💾 Save the file                                                          │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 4b: If Android App DOESN'T EXIST (First Time Setup)
+┌────────────────────────────────────────────────────────────────────────────┐
+│  ➕ Click "Add app" button                                                 │
+│  🤖 Select Android icon                                                    │
+│  📝 Fill in:                                                               │
+│     • Android package name: com.coupons.app                                │
+│     • App nickname: كوبونات (or "Coupons")                                │
+│     • SHA-1: Leave empty (can add later)                                   │
+│  ✅ Click "Register app"                                                   │
+│  📥 Click "Download google-services.json"                                  │
+│  ⏭️  Click "Next" → "Continue to console"                                  │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 5: Replace the Template File
+┌────────────────────────────────────────────────────────────────────────────┐
+│  📂 Find downloaded file (usually in Downloads folder)                     │
+│  📋 Copy it                                                                │
+│  📁 Navigate to: D:\my-fav-coupons-main\android\app\                      │
+│  🔄 Replace the existing google-services.json file                         │
+└────────────────────────────────────────────────────────────────────────────┘
+
+STEP 6: Verify and Build
+┌────────────────────────────────────────────────────────────────────────────┐
+│  Open the file and check:                                                  │
+│  ✓ "project_id": "saving-b35f3"                                            │
+│  ✓ "project_number": "626636527932"                                        │
+│  ✓ "package_name": "com.coupons.app"                                       │
+│  ✓ "mobilesdk_app_id": Should NOT say "YOUR_ANDROID_APP_ID"               │
+│                                                                             │
+│  Then run:                                                                  │
+│  $ npm run build:mobile                                                    │
+└────────────────────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 YOUR FIREBASE PROJECT INFO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project ID:        saving-b35f3
+Project Number:    626636527932
+Package Name:      com.coupons.app
+App Name:          كوبونات
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ AFTER YOU REPLACE THE FILE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Build and sync:
+   $ npm run build:mobile
+
+2. Open Android Studio:
+   $ npm run open:android
+
+3. Run on device/emulator (click the green ▶️ button)
+
+4. Check Logcat for:
+   [Push] FCM Token: [your token will appear here]
+
+5. Test push notification from Firebase Console:
+   - Go to Cloud Messaging
+   - Click "Send test message"
+   - Enter the FCM token
+   - Send!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 NEED HELP?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 Read: HOW_TO_DOWNLOAD_FIREBASE_CONFIG.md (detailed instructions)
+📖 Read: FIREBASE_SETUP.md (complete Firebase setup guide)
+🌐 Visit: https://firebase.google.com/docs/android/setup
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔒 SECURITY NOTE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ The file is already added to .gitignore
+✅ It will NOT be committed to Git
+✅ Keep it secure and don't share publicly
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIP: You can test if the template is still there by checking if the file
+        contains "YOUR_ANDROID_APP_ID" - if it does, you need to replace it!
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      Ready to download? Let's go! 🚀                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
