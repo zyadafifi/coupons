@@ -7,29 +7,40 @@ interface OnboardingGuardProps {
   children: React.ReactNode;
 }
 
-// Routes that should skip the onboarding check
-// Admin routes are only excluded when admin is enabled
-const EXCLUDED_ROUTES = isAdminEnabled() 
-  ? ['/onboarding', '/admin'] 
-  : ['/onboarding'];
-
 export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Skip check for excluded routes
-    const isExcluded = EXCLUDED_ROUTES.some(route => 
+    // Define excluded routes based on current admin status
+    // This is evaluated at runtime to ensure correct behavior
+    const excludedRoutes = isAdminEnabled() 
+      ? ['/onboarding', '/admin'] 
+      : ['/onboarding'];
+    
+    // Check if current path should skip onboarding check
+    const isExcluded = excludedRoutes.some(route => 
       location.pathname.startsWith(route)
     );
 
+    // Log for debugging (only in development)
+    if (import.meta.env.DEV) {
+      console.log('[OnboardingGuard]', {
+        pathname: location.pathname,
+        adminEnabled: isAdminEnabled(),
+        excludedRoutes,
+        isExcluded,
+      });
+    }
+
+    // Always allow excluded routes (including /admin when admin is enabled)
     if (isExcluded) {
       setIsChecking(false);
       return;
     }
 
-    // Check if user has submitted lead
+    // For non-excluded routes, check if user has submitted lead
     if (!hasSubmittedLead()) {
       navigate('/onboarding', { replace: true });
     } else {
