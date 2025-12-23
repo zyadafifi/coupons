@@ -8,7 +8,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const ADMIN_EMAIL = 'amr@leadintop.com';
+/**
+ * SECURITY: Admin Authorization
+ * 
+ * This function verifies admin status using Firebase Auth custom claims.
+ * 
+ * RECOMMENDED: Set custom claims via Firebase Admin SDK:
+ *   admin.auth().setCustomUserClaims(uid, { admin: true })
+ * 
+ * FALLBACK: Check UID against allowlist (configure ADMIN_UID_ALLOWLIST env var)
+ */
+
+// FALLBACK: Admin UID allowlist from environment variable (comma-separated)
+const ADMIN_UID_ALLOWLIST = (Deno.env.get('ADMIN_UID_ALLOWLIST') || '').split(',').filter(Boolean);
 
 // Initialize Firebase Admin if not already initialized
 function getFirebaseAuth() {
@@ -40,13 +52,20 @@ async function verifyAdminToken(authHeader: string | null): Promise<{ isAdmin: b
     const auth = getFirebaseAuth();
     const decodedToken = await auth.verifyIdToken(idToken);
     
-    if (decodedToken.email !== ADMIN_EMAIL) {
-      console.log(`[Auth] Non-admin user attempted access: ${decodedToken.email}`);
-      return { isAdmin: false, error: 'Forbidden: Admin access required' };
+    // Method 1: Check custom claims (PREFERRED)
+    if (decodedToken.admin === true) {
+      console.log(`[Auth] ✅ Admin verified via custom claim: ${decodedToken.uid}`);
+      return { isAdmin: true };
     }
     
-    console.log(`[Auth] Admin verified: ${decodedToken.email}`);
-    return { isAdmin: true };
+    // Method 2: Check UID allowlist (FALLBACK)
+    if (ADMIN_UID_ALLOWLIST.includes(decodedToken.uid)) {
+      console.log(`[Auth] ✅ Admin verified via UID allowlist: ${decodedToken.uid}`);
+      return { isAdmin: true };
+    }
+    
+    console.log(`[Auth] ❌ Non-admin user attempted access: ${decodedToken.uid} (${decodedToken.email})`);
+    return { isAdmin: false, error: 'Forbidden: Admin access required' };
   } catch (error: any) {
     console.error('[Auth] Token verification failed:', error.message);
     return { isAdmin: false, error: 'Invalid or expired token' };

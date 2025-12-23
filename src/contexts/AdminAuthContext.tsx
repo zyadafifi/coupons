@@ -1,8 +1,28 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/firebase';
 
-const ADMIN_EMAIL = 'amr@leadintop.com';
+/**
+ * SECURITY: Admin Authorization
+ * 
+ * This context uses Firebase Auth with custom claims for admin verification.
+ * 
+ * RECOMMENDED APPROACH:
+ * Set custom claims via Firebase Admin SDK (server-side):
+ *   admin.auth().setCustomUserClaims(uid, { admin: true })
+ * 
+ * FALLBACK APPROACH:
+ * Check Firestore /admins/{uid} document for allowlist
+ * 
+ * Client-side checks are for UI only - REAL SECURITY is in Firestore rules!
+ */
+
+// FALLBACK: Admin UID allowlist (use if custom claims not set up yet)
+// Replace with actual admin UIDs
+const ADMIN_UID_ALLOWLIST: string[] = [
+  // 'REPLACE_WITH_ACTUAL_ADMIN_UID',
+];
 
 interface AdminAuthContextType {
   user: User | null;
@@ -15,27 +35,63 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+// Check if user is admin via multiple methods
+async function checkIsAdmin(user: User): Promise<boolean> {
+  try {
+    // Method 1: Check custom claims (PREFERRED)
+    const tokenResult = await user.getIdTokenResult();
+    if (tokenResult.claims.admin === true) {
+      console.log('[Admin Auth] ✅ Admin verified via custom claim');
+      return true;
+    }
+
+    // Method 2: Check UID allowlist (FALLBACK)
+    if (ADMIN_UID_ALLOWLIST.includes(user.uid)) {
+      console.log('[Admin Auth] ✅ Admin verified via UID allowlist');
+      return true;
+    }
+
+    // Method 3: Check Firestore /admins/{uid} document (FALLBACK)
+    const adminDoc = await getDoc(doc(db, 'admins', user.uid));
+    if (adminDoc.exists()) {
+      console.log('[Admin Auth] ✅ Admin verified via Firestore allowlist');
+      return true;
+    }
+
+    console.log('[Admin Auth] ❌ User is not an admin');
+    return false;
+  } catch (error) {
+    console.error('[Admin Auth] Error checking admin status:', error);
+    return false;
+  }
+}
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const isAdmin = user?.email === ADMIN_EMAIL;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        if (firebaseUser.email === ADMIN_EMAIL) {
+        // Check if user is admin
+        const adminStatus = await checkIsAdmin(firebaseUser);
+        
+        if (adminStatus) {
           setUser(firebaseUser);
+          setIsAdmin(true);
           setError(null);
         } else {
-          // Not the admin email, sign out
+          // Not an admin, sign out
           await signOut(auth);
           setUser(null);
+          setIsAdmin(false);
           setError('غير مصرح لك بالدخول');
         }
       } else {
         setUser(null);
+        setIsAdmin(false);
       }
       setIsLoading(false);
     });
@@ -48,15 +104,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     
     try {
-      if (email !== ADMIN_EMAIL) {
-        setError('غير مصرح لك بالدخول');
-        setIsLoading(false);
-        return false;
-      }
-
       const result = await signInWithEmailAndPassword(auth, email, password);
       
-      if (result.user.email !== ADMIN_EMAIL) {
+      // Check if user is admin
+      const adminStatus = await checkIsAdmin(result.user);
+      
+      if (!adminStatus) {
         await signOut(auth);
         setError('غير مصرح لك بالدخول');
         setIsLoading(false);
@@ -64,6 +117,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       }
 
       setUser(result.user);
+      setIsAdmin(true);
       setIsLoading(false);
       return true;
     } catch (err: any) {
@@ -82,6 +136,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     await signOut(auth);
     setUser(null);
+    setIsAdmin(false);
   };
 
   return (

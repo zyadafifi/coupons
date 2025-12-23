@@ -90,7 +90,12 @@ export function usePushNotifications(selectedCountry: string | null) {
 
       // Listen for registration success
       PushNotifications.addListener('registration', async (token: Token) => {
-        console.log('[Push] FCM Token received:', token.value);
+        // SECURITY: Never log full tokens in production
+        if (import.meta.env.DEV) {
+          console.log('[Push] FCM Token received:', token.value);
+        } else {
+          console.log('[Push] FCM Token received (length:', token.value.length, ')');
+        }
         fcmTokenRef.current = token.value;
         
         // Store token for later use

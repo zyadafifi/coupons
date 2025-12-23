@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (SECURITY: Never commit secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+.env.backup
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -31,3 +40,25 @@ ios/
 # Firebase config files (sensitive)
 android/app/google-services.json
 ios/App/App/GoogleService-Info.plist
+
+# Service account keys (SECURITY: Never commit)
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk*.json
+
+# Build artifacts
+*.tgz
+*.zip
+build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini

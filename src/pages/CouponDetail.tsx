@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowRight, Heart, Share2, Lightbulb, Loader2, AlertCircle, Check, Copy } from "lucide-react";
-import DOMPurify from "dompurify";
+import { sanitizeRichText } from "@/security/sanitizeHtml";
 import { getCouponByIdForUser } from "@/hooks/useAppData";
 import { ProgressiveImage } from "@/components/shared/ProgressiveImage";
 import { useApp } from "@/contexts/AppContext";
@@ -244,12 +244,7 @@ export default function CouponDetail() {
               key={selectedVariantId}
               className="text-foreground text-sm leading-relaxed mb-2 prose prose-sm max-w-none [&_h1]:text-xl [&_h1]:font-bold [&_h2]:text-lg [&_h2]:font-semibold [&_p]:my-1 animate-fade-in"
               dangerouslySetInnerHTML={{ 
-                __html: DOMPurify.sanitize(currentDescription, {
-                  ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'b', 'i', 'u', 'ul', 'ol', 'li', 'br', 'span', 'div'],
-                  ALLOWED_ATTR: ['class', 'style'],
-                  FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input'],
-                  FORBID_ATTR: ['onerror', 'onclick', 'onload', 'onmouseover']
-                })
+                __html: sanitizeRichText(currentDescription)
               }}
             />
           ) : (
