@@ -2,6 +2,19 @@ import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 
+/**
+ * useSplashScreen Hook
+ * 
+ * Manages native splash screen behavior on mobile platforms.
+ * Works in coordination with MobileLoadingGate for seamless loading UX:
+ * 
+ * Flow:
+ * 1. Native splash shows immediately on app launch (gradient + logo)
+ * 2. React app starts loading
+ * 3. After ~300ms, hide native splash (fast transition)
+ * 4. MobileLoadingGate (React) takes over showing same design + animated dots
+ * 5. After ~1s total or when app ready, loading gate fades out
+ */
 export function useSplashScreen() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) {
@@ -20,7 +33,7 @@ export function useSplashScreen() {
         
         // Log only in development
         if (import.meta.env.DEV) {
-          console.log('[SplashScreen] Hidden successfully');
+          console.log('[SplashScreen] Native splash hidden - LoadingGate taking over');
         }
       } catch (error) {
         // Only log errors in development
@@ -30,11 +43,10 @@ export function useSplashScreen() {
       }
     };
 
-    // Wait for app to be ready before hiding
-    // The splash will auto-hide after 2000ms (set in capacitor.config.ts)
-    // But we can manually hide it sooner once the app is actually rendered
-    // Using 1200ms to ensure smooth transition and app is fully loaded
-    const timer = setTimeout(hideSplash, 1200);
+    // Hide native splash quickly (300ms) - LoadingGate will take over
+    // This creates a smooth transition: native splash → React LoadingGate
+    // LoadingGate shows the same design + animated dots for better UX
+    const timer = setTimeout(hideSplash, 300);
 
     return () => {
       clearTimeout(timer);

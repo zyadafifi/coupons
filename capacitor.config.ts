@@ -10,8 +10,8 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
-      launchAutoHide: true,
+      launchShowDuration: 0, // Don't artificially delay - let React handle timing
+      launchAutoHide: false, // We'll hide it manually from useSplashScreen
       backgroundColor: '#7c3aed',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_INSIDE', // Changed from CENTER_CROP to prevent logo cropping

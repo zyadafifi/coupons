@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
 import { PushNotificationHandler } from "./components/PushNotificationHandler";
 import { AndroidBackButtonHandler } from "./components/mobile/AndroidBackButtonHandler";
+import { MobileLoadingGate } from "./components/mobile/MobileLoadingGate";
 
 // Conditionally import admin components only if admin is enabled
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
@@ -49,6 +50,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <MobileLoadingGate />
             <HashRouter>
               <PushNotificationHandler />
               <AndroidBackButtonHandler />

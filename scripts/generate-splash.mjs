@@ -3,9 +3,9 @@
 /**
  * Splash Screen Generator
  * 
- * Generates a professional splash screen for Capacitor Android app
+ * Generates a premium splash screen for Capacitor Android/iOS app
  * - Size: 2732x2732px (optimal for all devices)
- * - Background: #7c3aed (purple brand color)
+ * - Background: Gradient from #7c3aed (top) to #5b21b6 (bottom)
  * - Logo: Centered and scaled to ~1200px width (large and crisp)
  * 
  * Usage: node scripts/generate-splash.mjs
@@ -34,8 +34,9 @@ const CONFIG = {
   // Logo target width (large and visible)
   logoWidth: 1200,
   
-  // Background color (purple brand)
-  backgroundColor: '#7c3aed',
+  // Gradient colors (purple brand gradient)
+  gradientTop: '#7c3aed',    // violet-600
+  gradientBottom: '#5b21b6', // violet-800
 };
 
 /**
@@ -78,19 +79,24 @@ async function generateSplash() {
       })
       .toBuffer();
     
-    // Create purple background
-    const background = await sharp({
-      create: {
-        width: CONFIG.splashSize,
-        height: CONFIG.splashSize,
-        channels: 4,
-        background: CONFIG.backgroundColor
-      }
-    })
-    .png()
-    .toBuffer();
+    // Create gradient background using SVG
+    const gradientSvg = `
+      <svg width="${CONFIG.splashSize}" height="${CONFIG.splashSize}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:${CONFIG.gradientTop};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${CONFIG.gradientBottom};stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="${CONFIG.splashSize}" height="${CONFIG.splashSize}" fill="url(#grad)" />
+      </svg>
+    `;
     
-    console.log(`✓ Created ${CONFIG.splashSize}x${CONFIG.splashSize}px background (${CONFIG.backgroundColor})`);
+    const background = await sharp(Buffer.from(gradientSvg))
+      .png()
+      .toBuffer();
+    
+    console.log(`✓ Created ${CONFIG.splashSize}x${CONFIG.splashSize}px gradient background (${CONFIG.gradientTop} → ${CONFIG.gradientBottom})`);
     
     // Calculate position to center logo
     const left = Math.round((CONFIG.splashSize - CONFIG.logoWidth) / 2);
