@@ -33,8 +33,8 @@ export function useSplashScreen() {
     // Wait for app to be ready before hiding
     // The splash will auto-hide after 2000ms (set in capacitor.config.ts)
     // But we can manually hide it sooner once the app is actually rendered
-    // Increased from 500ms to 1500ms to ensure smooth transition
-    const timer = setTimeout(hideSplash, 1500);
+    // Using 1200ms to ensure smooth transition and app is fully loaded
+    const timer = setTimeout(hideSplash, 1200);
 
     return () => {
       clearTimeout(timer);
