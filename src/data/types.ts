@@ -151,9 +151,9 @@ export interface Notification {
 export interface FirestoreLead {
   id: string;
   name: string;
-  phone: string;
+  phone: string; // E.164 format (e.g., "+966501234567", "+201012345678")
   countryCode: string; // e.g., "+966", "+971"
-  country: string; // e.g., "SA", "AE"
+  country: string; // ISO-2 code (e.g., "SA", "AE")
   deviceId: string;
   createdAt: any; // Firestore Timestamp
 }

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/shared/Logo';
+import { parseAndValidatePhone } from '@/security/phone';
 export default function Onboarding() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,15 +38,11 @@ export default function Onboarding() {
     }
   }, [navigate]);
 
-  const validatePhone = (phone: string): boolean => {
-    const cleaned = phone.replace(/\s/g, '');
-    return /^\d{7,12}$/.test(cleaned);
-  };
-
   const validate = (): boolean => {
     const newErrors = { name: '', phone: '' };
     let isValid = true;
 
+    // Validate name
     if (!formData.name.trim()) {
       newErrors.name = 'الاسم مطلوب';
       isValid = false;
@@ -54,11 +51,15 @@ export default function Onboarding() {
       isValid = false;
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'رقم الهاتف مطلوب';
-      isValid = false;
-    } else if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'رقم الهاتف غير صحيح';
+    // Validate phone using libphonenumber-js
+    const phoneValidation = parseAndValidatePhone(
+      formData.phone,
+      selectedCountry.code,
+      selectedCountry.dialCode
+    );
+
+    if (!phoneValidation.isValid) {
+      newErrors.phone = phoneValidation.error || 'رقم الهاتف غير صحيح';
       isValid = false;
     }
 
@@ -74,9 +75,19 @@ export default function Onboarding() {
     setIsSubmitting(true);
     
     try {
+      // Parse and normalize phone to E.164 format
+      const phoneValidation = parseAndValidatePhone(
+        formData.phone,
+        selectedCountry.code,
+        selectedCountry.dialCode
+      );
+
+      // Store normalized E.164 format
+      const phoneToStore = phoneValidation.e164 || formData.phone.replace(/\s/g, '');
+
       await addLead({
         name: formData.name.trim(),
-        phone: formData.phone.replace(/\s/g, ''),
+        phone: phoneToStore, // Store E.164 format
         countryCode: selectedCountry.dialCode,
         country: selectedCountry.code,
         deviceId: getDeviceId(),
@@ -102,6 +113,43 @@ export default function Onboarding() {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  // Validate phone on blur
+  const handlePhoneBlur = () => {
+    if (!formData.phone.trim()) return; // Don't validate empty on blur
+    
+    const phoneValidation = parseAndValidatePhone(
+      formData.phone,
+      selectedCountry.code,
+      selectedCountry.dialCode
+    );
+
+    if (!phoneValidation.isValid) {
+      setErrors(prev => ({ ...prev, phone: phoneValidation.error || 'رقم الهاتف غير صحيح' }));
+    }
+  };
+
+  // Re-validate phone when country changes
+  const handleCountryChange = (country: PhoneCountry) => {
+    setSelectedCountry(country);
+    setCountryPickerOpen(false);
+    
+    // Re-validate phone if already entered
+    if (formData.phone.trim()) {
+      const phoneValidation = parseAndValidatePhone(
+        formData.phone,
+        country.code,
+        country.dialCode
+      );
+
+      if (!phoneValidation.isValid) {
+        setErrors(prev => ({ ...prev, phone: phoneValidation.error || 'رقم الهاتف غير صحيح' }));
+      } else {
+        // Clear error if now valid
+        setErrors(prev => ({ ...prev, phone: '' }));
+      }
     }
   };
 
@@ -173,10 +221,7 @@ export default function Onboarding() {
                       <button
                         key={country.code}
                         type="button"
-                        onClick={() => {
-                          setSelectedCountry(country);
-                          setCountryPickerOpen(false);
-                        }}
+                        onClick={() => handleCountryChange(country)}
                         className={cn(
                           'flex items-center gap-3 w-full px-4 py-3 hover:bg-primary/10 transition-all duration-200',
                           selectedCountry.code === country.code && 'bg-primary/15'
@@ -201,6 +246,7 @@ export default function Onboarding() {
                 placeholder={selectedCountry.placeholder}
                 value={formData.phone}
                 onChange={handleChange('phone')}
+                onBlur={handlePhoneBlur}
                 className="flex-1 h-full border-0 bg-transparent text-base font-medium focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/50"
                 autoComplete="tel"
               />
@@ -251,8 +297,8 @@ export default function Onboarding() {
           >
             <Button 
               type="submit" 
-              className="w-full h-14 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-              disabled={isSubmitting}
+              className="w-full h-14 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              disabled={isSubmitting || !!errors.phone || !!errors.name}
             >
               {isSubmitting ? (
                 <>
