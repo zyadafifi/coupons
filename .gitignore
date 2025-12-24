@@ -7,9 +7,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build outputs (never commit these)
 dist
 dist-ssr
+build
 *.local
 
 # Environment variables (SECURITY: Never commit secrets)
@@ -32,10 +36,19 @@ dist-ssr
 *.sln
 *.sw?
 
-# Capacitor
+# Capacitor (platforms are managed by Capacitor CLI)
 android/
 ios/
 .capacitor/
+
+# Capacitor build artifacts
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/**/*.iml
+ios/App/Pods/
+ios/App/*.xcworkspace/xcuserdata/
 
 # Firebase config files (sensitive)
 android/app/google-services.json
@@ -46,10 +59,17 @@ ios/App/App/GoogleService-Info.plist
 *serviceAccount*.json
 firebase-adminsdk*.json
 
-# Build artifacts
+# Build artifacts & archives
 *.tgz
 *.zip
+*.tar.gz
 build/
+
+# Package manager lock files (if not using them)
+# Uncomment if using only npm:
+# yarn.lock
+# pnpm-lock.yaml
+# bun.lockb
 
 # Temporary files
 tmp/
@@ -57,6 +77,7 @@ temp/
 *.tmp
 *.swp
 *~
+temp_icon.png
 
 # OS files
 Thumbs.db

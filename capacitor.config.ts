@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
       launchAutoHide: true,
       backgroundColor: '#7c3aed',
       androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_CROP',
+      androidScaleType: 'CENTER_INSIDE', // Changed from CENTER_CROP to prevent logo cropping
       showSpinner: false,
       androidSpinnerStyle: 'large',
       iosSpinnerStyle: 'small',

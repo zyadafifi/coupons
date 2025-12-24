@@ -23,6 +23,9 @@
     "copy:android": "npx cap copy android",
     "copy:ios": "npx cap copy ios",
     "update:capacitor": "npx cap update",
+    "assets:generate": "npx @capacitor/assets generate",
+    "assets:android": "npx @capacitor/assets generate --android",
+    "assets:ios": "npx @capacitor/assets generate --ios",
     "audit": "npm audit",
     "audit:fix": "npm audit fix",
     "audit:report": "npm audit --json > audit-report.json && echo 'Audit report saved to audit-report.json'",
@@ -78,6 +81,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.0.0",
     "@eslint/js": "^9.32.0",
     "@tailwindcss/typography": "^0.5.16",

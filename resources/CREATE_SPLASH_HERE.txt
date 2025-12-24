@@ -1,0 +1,54 @@
+┌─────────────────────────────────────────────────────────────────┐
+│  IMPORTANT: CREATE YOUR SPLASH SCREEN HERE                      │
+└─────────────────────────────────────────────────────────────────┘
+
+You need to create: splash.png (2732x2732px)
+
+QUICK STEPS:
+═══════════════════════════════════════════════════════════════
+
+1. Open your logo: src/assets/logo-original.png
+
+2. Create new image:
+   - Size: 2732 x 2732 pixels
+   - Background: TRANSPARENT (splash color is set in config)
+   
+3. Center your logo:
+   - Logo size: ~800-1200px
+   - Leave ~866px padding on all sides
+   - Logo should have transparent background
+
+4. Save as: resources/splash.png
+
+5. Generate assets:
+   npm run assets:android
+
+6. Test:
+   npm run build:mobile:android
+   npm run open:android
+
+═══════════════════════════════════════════════════════════════
+
+ONLINE TOOLS (if you don't have image editor):
+- Canva: https://www.canva.com/
+- Figma: https://www.figma.com/
+- Remove.bg: https://www.remove.bg/ (to remove logo background)
+
+EXAMPLE STRUCTURE:
+┌────────────────────────────────────────┐
+│                                        │ ← 866px padding
+│                                        │
+│                                        │
+│              ┌────────┐                │
+│              │  LOGO  │   ~1000px      │
+│              └────────┘                │
+│                                        │
+│                                        │
+│                                        │ ← 866px padding
+└────────────────────────────────────────┘
+        2732 x 2732 total
+
+Background color (#7c3aed purple) is defined in capacitor.config.ts
+
+See README.md in this folder for detailed instructions.
+
