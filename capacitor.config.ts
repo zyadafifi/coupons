@@ -10,11 +10,11 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0, // Don't artificially delay - let React handle timing
-      launchAutoHide: false, // We'll hide it manually from useSplashScreen
+      launchShowDuration: 0, // Dismiss Capacitor overlay immediately (0ms)
+      launchAutoHide: true, // Auto-dismiss Capacitor overlay, let theme splash be the only splash
       backgroundColor: '#7c3aed',
       androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_INSIDE', // Changed from CENTER_CROP to prevent logo cropping
+      androidScaleType: 'CENTER_INSIDE',
       showSpinner: false,
       androidSpinnerStyle: 'large',
       iosSpinnerStyle: 'small',
