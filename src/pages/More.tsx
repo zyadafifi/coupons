@@ -1,18 +1,43 @@
 import { useState } from 'react';
-import { ChevronLeft, Bell, HelpCircle, Info, MessageSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Bell, HelpCircle, Info, MessageSquare, RotateCcw } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from '@/hooks/use-toast';
+import { resetOnboarding } from '@/hooks/useLeads';
 import { cn } from '@/lib/utils';
 
 export default function More() {
   const { notificationsEnabled, setNotificationsEnabled } = useApp();
+  const navigate = useNavigate();
   const [requestSheetOpen, setRequestSheetOpen] = useState(false);
   const [requestForm, setRequestForm] = useState({ storeName: '', storeUrl: '', notes: '' });
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+
+  const handleResetOnboarding = () => {
+    resetOnboarding();
+    toast({ 
+      title: "تم إعادة تعيين التسجيل", 
+      description: "سيتم توجيهك إلى صفحة التسجيل" 
+    });
+    setResetDialogOpen(false);
+    navigate('/onboarding', { replace: true });
+  };
 
   const handleRequestSubmit = () => {
     if (!requestForm.storeName) {
@@ -52,6 +77,13 @@ export default function More() {
       label: 'عن التطبيق',
       sublabel: 'الإصدار 1.0.0',
       action: () => toast({ title: "كوبونات", description: "الإصدار 1.0.0 - تطبيق كوبونات الخصم" }),
+      hasArrow: true,
+    },
+    {
+      icon: RotateCcw,
+      label: 'إعادة التسجيل',
+      sublabel: 'إعادة تعيين بيانات التسجيل',
+      action: () => setResetDialogOpen(true),
       hasArrow: true,
     },
   ];
@@ -156,6 +188,24 @@ export default function More() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Reset Onboarding Dialog */}
+      <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+        <AlertDialogContent dir="rtl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>إعادة التسجيل</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من إعادة تعيين بيانات التسجيل؟ سيتم حذف معلوماتك الحالية وإعادة توجيهك إلى صفحة التسجيل.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction onClick={handleResetOnboarding} className="bg-destructive hover:bg-destructive/90">
+              إعادة التسجيل
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

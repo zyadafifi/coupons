@@ -132,7 +132,9 @@ const App = () => {
                     </>
                   )}
 
-                  {/* Onboarding */}
+                  {/* Auth Routes - Always accessible */}
+                  {/* /login redirects to /onboarding (phone-based user entry) */}
+                  <Route path="/login" element={<Navigate to="/onboarding" replace />} />
                   <Route path="/onboarding" element={<Onboarding />} />
 
                   {/* User Routes */}

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Loader2, Check } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronDown, Loader2, Check, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { phoneCountries } from '@/data/phone-countries';
 import { PhoneCountry } from '@/data/types';
-import { addLead, getDeviceId, hasSubmittedLead, markLeadSubmitted } from '@/hooks/useLeads';
+import { addLead, getDeviceId, hasSubmittedLead, markLeadSubmitted, resetOnboarding } from '@/hooks/useLeads';
 import { toast } from 'sonner';
 import {
   Popover,
@@ -15,9 +15,13 @@ import {
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/shared/Logo';
 import { parseAndValidatePhone } from '@/security/phone';
+
 export default function Onboarding() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<PhoneCountry>(phoneCountries[0]);
   const [countryPickerOpen, setCountryPickerOpen] = useState(false);
   
@@ -31,12 +35,33 @@ export default function Onboarding() {
     phone: '',
   });
 
-  // Check if already submitted
+  // Handle reset query parameter (must run first)
   useEffect(() => {
-    if (hasSubmittedLead()) {
-      navigate('/', { replace: true });
+    const resetParam = searchParams.get('resetOnboarding');
+    if (resetParam === '1') {
+      resetOnboarding();
+      // Remove query param from URL
+      navigate('/onboarding', { replace: true });
+      setShouldShow(true);
+      setChecked(true);
+      return;
     }
-  }, [navigate]);
+  }, [searchParams, navigate]);
+
+  // Check if already submitted (prevent flash)
+  useEffect(() => {
+    if (checked) return; // Already checked (including after reset)
+    
+    if (hasSubmittedLead()) {
+      // Don't render UI, just navigate
+      navigate('/', { replace: true });
+      return;
+    }
+    
+    // Not submitted, show onboarding
+    setShouldShow(true);
+    setChecked(true);
+  }, [navigate, checked]);
 
   const validate = (): boolean => {
     const newErrors = { name: '', phone: '' };
@@ -85,13 +110,16 @@ export default function Onboarding() {
       // Store normalized E.164 format
       const phoneToStore = phoneValidation.e164 || formData.phone.replace(/\s/g, '');
 
-      await addLead({
+      const leadId = await addLead({
         name: formData.name.trim(),
         phone: phoneToStore, // Store E.164 format
         countryCode: selectedCountry.dialCode,
         country: selectedCountry.code,
         deviceId: getDeviceId(),
       });
+
+      // Mark as submitted with lead ID
+      markLeadSubmitted(leadId);
 
       toast.success('تم التسجيل بنجاح!');
       navigate('/', { replace: true });
@@ -153,11 +181,38 @@ export default function Onboarding() {
     }
   };
 
+  // Don't render until checked (prevents flash)
+  if (!checked || !shouldShow) {
+    return null;
+  }
+
+  // Dev-only reset button handler
+  const handleDevReset = () => {
+    resetOnboarding();
+    toast.success('تم إعادة تعيين التسجيل (وضع التطوير)');
+    // Reload to clear form state
+    window.location.reload();
+  };
+
   return (
     <div 
       className="min-h-screen bg-background flex flex-col"
       dir="rtl"
     >
+      {/* Dev-only reset button */}
+      {import.meta.env.DEV && (
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDevReset}
+            className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-destructive/30"
+          >
+            <RotateCcw className="w-4 h-4 ml-2" />
+            Reset (Dev)
+          </Button>
+        </div>
+      )}
       {/* Decorative Header with Primary Color */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent" />

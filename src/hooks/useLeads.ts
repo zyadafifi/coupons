@@ -10,6 +10,25 @@ import {
 import { db } from '@/firebase';
 import { FirestoreLead } from '@/data/types';
 
+// Get app version from package.json or env
+function getAppVersion(): string {
+  // Try to get from env first (can be set at build time)
+  if (import.meta.env.VITE_APP_VERSION) {
+    return import.meta.env.VITE_APP_VERSION;
+  }
+  // Fallback to package.json version (requires import, but we'll use a constant)
+  // For now, use a default version - can be updated via build script
+  return '1.0.0';
+}
+
+// Lead submission data schema
+interface LeadSubmissionData {
+  submitted: boolean;
+  leadId: string;
+  submittedAt: number;
+  appVersion: string;
+}
+
 // Generate or get device ID
 export function getDeviceId(): string {
   const key = 'app_device_id';
@@ -23,14 +42,50 @@ export function getDeviceId(): string {
   return deviceId;
 }
 
-// Check if user has already submitted a lead
-export function hasSubmittedLead(): boolean {
-  return localStorage.getItem('lead_submitted') === 'true';
+// Clear device ID (for reset)
+export function clearDeviceId(): void {
+  localStorage.removeItem('app_device_id');
 }
 
-// Mark lead as submitted
-export function markLeadSubmitted(): void {
-  localStorage.setItem('lead_submitted', 'true');
+// Check if user has already submitted a lead (validates object structure)
+export function hasSubmittedLead(): boolean {
+  try {
+    const stored = localStorage.getItem('lead_submitted');
+    if (!stored) return false;
+    
+    // Handle legacy string format for backward compatibility
+    if (stored === 'true') {
+      return true;
+    }
+    
+    // Parse and validate object structure
+    const data: LeadSubmissionData = JSON.parse(stored);
+    return data.submitted === true && !!data.leadId && !!data.submittedAt;
+  } catch {
+    return false;
+  }
+}
+
+// Mark lead as submitted with versioned data
+export function markLeadSubmitted(leadId?: string): void {
+  const data: LeadSubmissionData = {
+    submitted: true,
+    leadId: leadId || 'unknown',
+    submittedAt: Date.now(),
+    appVersion: getAppVersion(),
+  };
+  localStorage.setItem('lead_submitted', JSON.stringify(data));
+}
+
+// Clear lead submission (for reset/testing)
+export function clearLeadSubmission(): void {
+  localStorage.removeItem('lead_submitted');
+}
+
+// Reset onboarding data (clears lead and device ID)
+export function resetOnboarding(): void {
+  clearLeadSubmission();
+  clearDeviceId();
 }
 
 // Hook for leads collection (admin)
