@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 0, // Instant - user should never see native splash
       launchAutoHide: true, // Auto-dismiss immediately
-      backgroundColor: "#000000", // Black to avoid white flash
+      backgroundColor: "#7c3aed", 
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP", // Doesn't matter since it's instant
       showSpinner: false,
