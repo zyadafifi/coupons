@@ -18,7 +18,7 @@ interface AnimatedSplashProps {
  * Features:
  * - Full-screen fixed overlay with highest z-index
  * - Animated WebP from /splash-animation.webp
- * - Black background (#000000)
+ * - Purple background (#7c3aed)
  * - Auto-hides after 2200ms or when isReady prop is true
  * - Smooth fade-out transition (250ms)
  * - Does NOT appear on web builds
@@ -78,7 +78,7 @@ export function AnimatedSplash({ isReady = false }: AnimatedSplashProps) {
     <div
       className="fixed inset-0 z-[99999] flex items-center justify-center"
       style={{
-        backgroundColor: '#000000',
+        backgroundColor: '#7c3aed',
         pointerEvents: 'all',
         transition: 'opacity 250ms ease-out',
         opacity: fading ? 0 : 1,
