@@ -9,7 +9,7 @@ interface AnimatedSplashProps {
   isReady?: boolean;
 }
 
-const MIN_DURATION = 3500; // Minimum time to show splash (ms) - allows animation to complete
+const MIN_DURATION = 5000; // Minimum time to show splash (ms) - allows animation to complete
 const MAX_DURATION = 7000; // Maximum time to show splash (ms) - failsafe
 const FADE_OUT_DURATION = 250; // Fade-out transition duration (ms)
 
@@ -22,7 +22,7 @@ const FADE_OUT_DURATION = 250; // Fade-out transition duration (ms)
  * Features:
  * - Full-screen fixed overlay with highest z-index
  * - Animated WebP from /splash-animation.webp (with @2x support)
- * - Purple background (#7c3aed)
+ * - Yellow brand background (#FACC15)
  * - Prevents pixelation by not upscaling beyond native resolution
  * - Auto-hides after MIN_DURATION (3500ms) or when isReady prop is true
  * - Smooth fade-out transition (250ms)
@@ -163,7 +163,7 @@ export function AnimatedSplash({ isReady = false }: AnimatedSplashProps) {
     <div
       className="fixed inset-0 z-[99999] flex items-center justify-center"
       style={{
-        backgroundColor: "#7c3aed",
+        backgroundColor: "#FACC15",
         pointerEvents: "all",
         transition: "opacity 250ms ease-out",
         opacity: fading ? 0 : 1,
