@@ -59,6 +59,7 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Capacitor (for mobile Android/iOS apps)
 
 ## How can I deploy this project?
 
@@ -71,3 +72,154 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+---
+
+## 📱 Mobile Development with Capacitor
+
+This project includes a Capacitor mobile app for Android and iOS.
+
+### ⚠️ IMPORTANT: Always Run Capacitor Commands from Project Root
+
+**Never run `npx cap ...` commands from inside the `/android` or `/ios` folders!**
+
+All Capacitor commands must be executed from the **project root directory**.
+
+```bash
+# ✅ CORRECT - From project root
+npm run cap:sync:android
+npm run cap:open:android
+
+# ❌ WRONG - From /android folder
+cd android
+npx cap sync    # This will fail!
+```
+
+### 🏥 Health Check
+
+Before running any Capacitor command, verify your environment:
+
+```bash
+npm run android:doctor
+```
+
+This checks:
+- You're in the correct directory (project root)
+- Capacitor config exists
+- Android platform is installed
+- Catches common mistakes automatically
+
+### 🚀 Quick Start: Testing Without Rebuilding APK
+
+The fastest way to test your app after making UI changes:
+
+```bash
+# 1. Open Android Studio (runs doctor check first)
+npm run android:run
+
+# 2. In Android Studio:
+#    - Wait for Gradle sync to complete
+#    - Click the green ▶ Run button
+#    - Select your device/emulator
+
+# 3. App launches with latest changes!
+```
+
+**Why this is fast:** You don't need to rebuild the entire APK just to test UI changes. Android Studio's incremental build is much faster.
+
+### 📦 Common Capacitor Commands (Safe Wrappers)
+
+```bash
+# Sync web assets to Android (after building)
+npm run cap:sync:android
+
+# Open project in Android Studio
+npm run cap:open:android
+
+# Open Android Studio with helpful instructions
+npm run android:run
+
+# Build + sync in one command
+npm run build:mobile:android
+
+# Check environment health
+npm run android:doctor
+```
+
+### 🔄 Full Build & Deploy Workflow
+
+When you need to build a fresh APK (e.g., after native code changes):
+
+```bash
+# 1. Build web assets for mobile
+npm run build:mobile
+
+# 2. Open in Android Studio
+npm run cap:open:android
+
+# 3. In Android Studio:
+#    Build → Generate Signed Bundle/APK
+#    OR
+#    Click ▶ Run for debug testing
+```
+
+### 🌐 Optional: Live Reload (Advanced)
+
+For faster development, you can use live reload to see changes instantly without rebuilding:
+
+**Step 1:** Start your development server
+```bash
+npm run dev
+# Note the URL (e.g., http://localhost:5173)
+```
+
+**Step 2:** Update `capacitor.config.ts` temporarily:
+```typescript
+server: {
+  url: 'http://YOUR_LOCAL_IP:5173',  // e.g., http://192.168.1.100:5173
+  cleartext: true
+}
+```
+
+**Step 3:** Sync and run:
+```bash
+npm run cap:sync:android
+npm run android:run
+```
+
+**Step 4:** Make changes in your code - they'll appear instantly in the app!
+
+**⚠️ Remember:** Remove the `server.url` before building for production!
+
+### 🛠️ Troubleshooting
+
+**Error: "android platform has not been added yet"**
+```bash
+# Add Android platform first
+npx cap add android
+```
+
+**App not updating with latest changes?**
+```bash
+# Clean and rebuild
+npm run build:mobile
+cd android
+./gradlew clean
+cd ..
+npm run android:run
+```
+
+**Running from wrong directory?**
+```bash
+# Check your environment
+npm run android:doctor
+
+# If you're in /android, go back to root:
+cd ..
+```
+
+### 📚 More Resources
+
+- [Capacitor Documentation](https://capacitorjs.com/docs)
+- [Android Studio Download](https://developer.android.com/studio)
+- [Capacitor CLI Reference](https://capacitorjs.com/docs/cli)

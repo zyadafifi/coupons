@@ -1,37 +1,37 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'com.coupons.app',
-  appName: 'كوبونات',
-  webDir: 'dist',
+  appId: "com.coupons.app",
+  appName: "كوبونات",
+  webDir: "dist",
   server: {
-    androidScheme: 'https',
-    iosScheme: 'https',
+    androidScheme: "https",
+    iosScheme: "https",
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0, // Dismiss Capacitor overlay immediately (0ms)
-      launchAutoHide: true, // Auto-dismiss Capacitor overlay, let theme splash be the only splash
-      backgroundColor: '#7c3aed',
-      androidSplashResourceName: 'splash',
-      androidScaleType: 'CENTER_INSIDE',
+      launchShowDuration: 0, // Instant - user should never see native splash
+      launchAutoHide: true, // Auto-dismiss immediately
+      backgroundColor: "#000000", // Black to avoid white flash
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP", // Doesn't matter since it's instant
       showSpinner: false,
-      androidSpinnerStyle: 'large',
-      iosSpinnerStyle: 'small',
-      spinnerColor: '#ffffff',
+      androidSpinnerStyle: "large",
+      iosSpinnerStyle: "small",
+      spinnerColor: "#ffffff",
       splashFullScreen: true,
       splashImmersive: true,
     },
     StatusBar: {
-      style: 'DARK',
-      backgroundColor: '#7c3aed',
+      style: "DARK",
+      backgroundColor: "#7c3aed",
     },
     PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
+      presentationOptions: ["badge", "sound", "alert"],
     },
     Keyboard: {
-      resize: 'ionic',
-      style: 'dark',
+      resize: "ionic",
+      style: "dark",
       resizeOnFullScreen: true,
     },
     App: {
@@ -44,10 +44,9 @@ const config: CapacitorConfig = {
     webContentsDebuggingEnabled: true,
   },
   ios: {
-    contentInset: 'automatic',
+    contentInset: "automatic",
     scrollEnabled: true,
   },
 };
 
 export default config;
-
