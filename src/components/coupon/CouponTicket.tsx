@@ -94,6 +94,9 @@ export function CouponTicket({
             *الشروط والأحكام
           </p>
 
+          {/* Horizontal Line */}
+          <div className="bg-[#d9dbdf] h-px my-4 -mx-4 sm:-mx-5"></div>
+
           {/* Apply Code Button (Visual Only) */}
           <div className="text-center">
             <div className="inline-block px-6 py-2.5   text-foreground font-medium text-sm sm:text-base cursor-default">
