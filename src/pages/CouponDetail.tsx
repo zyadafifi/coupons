@@ -425,6 +425,7 @@ export default function CouponDetail() {
                           descriptionAr={
                             coupon.descriptionAr || coupon.description || ""
                           }
+                          ticketDescriptionAr={coupon.ticketDescriptionAr}
                           storeLogo={storeLogo}
                           storeLogoUrl={storeLogoUrl}
                           isSelected={true}

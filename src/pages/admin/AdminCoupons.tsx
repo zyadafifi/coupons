@@ -179,19 +179,23 @@ export default function AdminCoupons() {
 
   const openEditDialog = (coupon: FirestoreCoupon) => {
     setEditingCoupon(coupon);
+    // Defensive: Filter terms to only strings (in case old data has objects)
+    const cleanTerms = Array.isArray(coupon.terms)
+      ? coupon.terms.filter((t) => typeof t === "string")
+      : [];
     setFormData({
       titleAr: coupon.titleAr || "",
       descriptionAr: coupon.descriptionAr || "",
       code: coupon.code || "",
       discountLabel: coupon.discountLabel || "",
       storeId: coupon.storeId || "",
-      ticketDescriptionAr: (coupon as any).ticketDescriptionAr || "",
+      ticketDescriptionAr: coupon.ticketDescriptionAr || "",
       categoryId: coupon.categoryId || "",
       countryId: coupon.countryId || "",
       linkUrl: coupon.linkUrl || "",
       offerButtonLabel: (coupon as any).offerButtonLabel || "",
       expiryDate: timestampToString(coupon.expiryDate),
-      terms: coupon.terms || [],
+      terms: cleanTerms,
       isPopular: coupon.isPopular || false,
       isActive: coupon.isActive ?? true,
       usageCount: coupon.usageCount || 0,
@@ -206,6 +210,11 @@ export default function AdminCoupons() {
     setIsSubmitting(true);
 
     try {
+      // Defensive: Filter terms to only strings (in case formData has objects from old data)
+      const cleanTerms = Array.isArray(formData.terms)
+        ? formData.terms.filter((t) => typeof t === "string")
+        : [];
+
       // Build data object, excluding undefined values
       const data: Record<string, any> = {
         titleAr: formData.titleAr,
@@ -220,7 +229,7 @@ export default function AdminCoupons() {
         countryId: formData.countryId,
         linkUrl: formData.linkUrl,
         offerButtonLabel: formData.offerButtonLabel,
-        terms: formData.terms,
+        terms: cleanTerms,
         isPopular: formData.isPopular,
         isActive: formData.isActive,
         usageCount: formData.usageCount,
