@@ -58,11 +58,15 @@ function firestoreCouponToApp(
   }));  
   const anyFc = fc as any;
 
-  const ticketDescriptionAr =
-    (anyFc.ticketDescriptionAr ?? "") ||
-    (anyFc.terms && typeof anyFc.terms === "object"
-      ? (anyFc.terms.ticketDescriptionAr ?? "")
-      : "");
+const ticketDescriptionAr =
+  (anyFc.ticketDescriptionAr ?? "") ||
+  (typeof anyFc.terms?.ticketDescriptionAr === "string" ? anyFc.terms.ticketDescriptionAr : "") ||
+  (Array.isArray(anyFc.terms)
+    ? // لو متخزن جوه terms array كـ object
+      (anyFc.terms.find((t: any) => t && typeof t === "object" && typeof t.ticketDescriptionAr === "string")
+        ?.ticketDescriptionAr ?? "")
+    : "");
+
   
   return {
     id: fc.id,
@@ -77,7 +81,7 @@ function firestoreCouponToApp(
     discountType: "percentage",
     // Image: prefer store banner for background, else logo, else placeholder
     image: store?.bannerUrl || store?.logoUrl || PLACEHOLDER_IMAGE,
-    terms: Array.isArray((fc as any).terms) ? (fc as any).terms : [],
+    terms: Array.isArray(anyFc.terms) ? anyFc.terms.filter((t: any) => typeof t === "string") : [],
 
     expiryDate: fc.expiryDate?.toDate?.()?.toISOString?.()?.split("T")[0] || "",
     isPopular: fc.isPopular || false,
