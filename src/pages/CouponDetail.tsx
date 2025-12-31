@@ -385,7 +385,7 @@ export default function CouponDetail() {
                         <div
                           key={variant.id}
                           id={`card-${variant.id}`}
-                          className="flex-shrink-0 w-[62vw] sm:w-[55vw] md:w-[45vw] lg:w-[35vw] max-w-xs snap-start"
+                          className="flex-shrink-0 w-full min-w-[400px] snap-start"
                           style={{ scrollSnapStop: "always" }}
                         >
                           <CouponTicket
@@ -415,7 +415,7 @@ export default function CouponDetail() {
                       ))
                     ) : (
                       <div
-                        className="flex-shrink-0 w-[62vw] sm:w-[55vw] md:w-[45vw] lg:w-[35vw] max-w-xs snap-start"
+                        className="flex-shrink-0 w-full min-w-[400px] snap-start"
                         style={{ scrollSnapStop: "always" }}
                       >
                         <CouponTicket

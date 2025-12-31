@@ -26,19 +26,18 @@ export function CouponTicket({
   return (
     <div
       className={cn(
-        "ticket-container relative mx-auto w-full max-w-md px-3 cursor-pointer transition-transform duration-200 hover:scale-[1.02]",
+        "ticket-container relative w-full min-w-[400px] max-w-full mx-auto cursor-pointer transition-transform duration-200 hover:scale-[1.02] mb-4 pr-2",
         isSelected && "scale-[1.02]"
       )}
       onClick={handleCardClick}
     >
       {/* Main Ticket Card - Rounded container with shadow */}
       <div
-  className={cn(
-    "relative overflow-hidden rounded-[20px] sm:rounded-[24px] shadow-lg bg-card transition-all duration-200"
-  )}
->
-
-        {/* Top Panel - Green section with high-lights.png background */}
+        className={cn(
+          "relative overflow-hidden rounded-[20px] sm:rounded-[24px] shadow-lg bg-card transition-all duration-200"
+        )}
+      >
+        {/* Top Panel */}
         <div
           className="relative min-h-[55%] px-4 py-5 pb-6 sm:px-5 sm:py-6 sm:pb-7"
           style={{
@@ -47,7 +46,6 @@ export function CouponTicket({
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
           }}
-          
         >
           <div className="flex items-start gap-3 sm:gap-4">
             {/* Store Logo */}
@@ -66,7 +64,7 @@ export function CouponTicket({
             </div>
 
             {/* Discount & Code */}
-            <div className="flex-1 text-white">
+            <div className="flex-1 text-white mt-2">
               <p className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
                 {discount}
               </p>
@@ -77,16 +75,8 @@ export function CouponTicket({
           </div>
         </div>
 
-        {/* Perforation Effect - Dashed Line with Side Notches */}
-        <div className="relative h-3 overflow-visible">
-          
-
-          {/* Dashed Line Divider */}
-          <div className="absolute bottom-0 left-0 right-0 h-px border-t-2 border-dashed border-border/50" />
-        </div>
-
         {/* Bottom Panel - White section */}
-        <div className="bg-card px-4 py-4 sm:px-5 sm:py-5">
+        <div className="bg-[#F3F4F6] px-4 py-4 sm:px-5 sm:py-5">
           {/* Discount Text */}
           <p className="text-base sm:text-lg font-bold text-foreground mb-2">
             {discount}
