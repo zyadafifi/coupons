@@ -40,6 +40,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ADMINS COLLECTION - Allow users to read their own admin document
+    // This is used for admin verification fallback method
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if isAdmin();
+    }
+
     // DEFAULT DENY
     match /{document=**} {
       allow read, write: if false;
