@@ -1,6 +1,15 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowRight, Heart, Share2, Lightbulb, Loader2, AlertCircle, Check, Copy } from "lucide-react";
+import {
+  ArrowRight,
+  Heart,
+  Share2,
+  Lightbulb,
+  Loader2,
+  AlertCircle,
+  Check,
+  Copy,
+} from "lucide-react";
 import { sanitizeRichText } from "@/security/sanitizeHtml";
 import { getCouponByIdForUser } from "@/hooks/useAppData";
 import { ProgressiveImage } from "@/components/shared/ProgressiveImage";
@@ -21,7 +30,6 @@ export default function CouponDetail() {
   const [copiedVariantId, setCopiedVariantId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
 
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [store, setStore] = useState<Store | null>(null);
@@ -45,7 +53,9 @@ export default function CouponDetail() {
   }, []);
 
   // Selected variant state
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     async function loadCoupon() {
@@ -65,7 +75,9 @@ export default function CouponDetail() {
 
           // Set default variant if exists
           if (result.coupon.variants && result.coupon.variants.length > 0) {
-            const defaultVariant = result.coupon.variants.find((v) => v.isDefault) || result.coupon.variants[0];
+            const defaultVariant =
+              result.coupon.variants.find((v) => v.isDefault) ||
+              result.coupon.variants[0];
             setSelectedVariantId(defaultVariant.id);
           }
         } else {
@@ -85,27 +97,35 @@ export default function CouponDetail() {
   // Get selected variant or null if no variants
   const selectedVariant = useMemo(() => {
     if (!coupon?.variants || coupon.variants.length === 0) return null;
-    return coupon.variants.find((v) => v.id === selectedVariantId) || coupon.variants[0];
+    return (
+      coupon.variants.find((v) => v.id === selectedVariantId) ||
+      coupon.variants[0]
+    );
   }, [coupon?.variants, selectedVariantId]);
 
   // Get current code, description, discount based on variant or main coupon
   const currentCode = selectedVariant?.code || coupon?.code || "";
-  const currentDescription = selectedVariant?.descriptionAr || coupon?.description || "";
-  const currentDiscount = selectedVariant?.discountLabel || coupon?.discount || "";
+  const currentDescription =
+    selectedVariant?.descriptionAr || coupon?.description || "";
+  const currentDiscount =
+    selectedVariant?.discountLabel || coupon?.discount || "";
 
   const favorite = coupon ? isFavorite(coupon.id) : false;
 
-  const handleCopyCode = useCallback((code: string, variantId: string) => {
-    if (code) {
-      navigator.clipboard.writeText(code);
-      setCopiedVariantId(variantId);
-      toast({
-        title: "تم نسخ الكود",
-        description: code,
-      });
-      setTimeout(() => setCopiedVariantId(null), 2000);
-    }
-  }, [toast]);
+  const handleCopyCode = useCallback(
+    (code: string, variantId: string) => {
+      if (code) {
+        navigator.clipboard.writeText(code);
+        setCopiedVariantId(variantId);
+        toast({
+          title: "تم نسخ الكود",
+          description: code,
+        });
+        setTimeout(() => setCopiedVariantId(null), 2000);
+      }
+    },
+    [toast]
+  );
 
   const handleShare = async () => {
     if (coupon && navigator.share) {
@@ -126,10 +146,12 @@ export default function CouponDetail() {
     }
   };
 
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
+      <div
+        className="min-h-screen flex items-center justify-center bg-background"
+        dir="rtl"
+      >
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -137,9 +159,14 @@ export default function CouponDetail() {
 
   if (error || !coupon) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-4" dir="rtl">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-4 p-4"
+        dir="rtl"
+      >
         <AlertCircle className="w-12 h-12 text-destructive" />
-        <p className="text-muted-foreground text-center">{error || "الكوبون غير موجود"}</p>
+        <p className="text-muted-foreground text-center">
+          {error || "الكوبون غير موجود"}
+        </p>
         <Button variant="outline" onClick={() => navigate(-1)}>
           العودة
         </Button>
@@ -151,17 +178,27 @@ export default function CouponDetail() {
   const storeLogoUrl = store?.logoUrl;
   const storeLogo = store?.logo || "🏪";
   const storeColor = store?.color || "#6366f1";
-  
 
   // Calculate parallax transform
   const parallaxOffset = Math.min(scrollY * 0.4, 100);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-background flex flex-col overflow-y-auto" dir="rtl">
+    <div
+      ref={containerRef}
+      className="min-h-screen bg-background flex flex-col overflow-y-auto"
+      dir="rtl"
+    >
       {/* Hero Image Section - Responsive height with Parallax */}
       <div className="relative w-full h-[45vh] sm:h-[50vh] md:h-[55vh] min-h-[280px] max-h-[500px] overflow-hidden">
-        <div className="absolute inset-0 w-full h-[120%]" style={{ transform: `translateY(-${parallaxOffset}px)` }}>
-          <ProgressiveImage src={coupon.image} alt={coupon.title} className="w-full h-full object-cover" />
+        <div
+          className="absolute inset-0 w-full h-[120%]"
+          style={{ transform: `translateY(-${parallaxOffset}px)` }}
+        >
+          <ProgressiveImage
+            src={coupon.image}
+            alt={coupon.title}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Gradient Overlay for better text readability */}
@@ -186,10 +223,15 @@ export default function CouponDetail() {
               onClick={() => toggleFavorite(coupon.id)}
               className={cn(
                 "w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-95 cursor-pointer",
-                favorite ? "bg-destructive" : "bg-foreground/30 backdrop-blur-sm",
+                favorite
+                  ? "bg-destructive"
+                  : "bg-foreground/30 backdrop-blur-sm"
               )}
             >
-              <Heart className="w-5 h-5 text-card pointer-events-none" fill={favorite ? "currentColor" : "none"} />
+              <Heart
+                className="w-5 h-5 text-card pointer-events-none"
+                fill={favorite ? "currentColor" : "none"}
+              />
             </button>
             <button
               type="button"
@@ -234,7 +276,9 @@ export default function CouponDetail() {
             <span>💖</span>
             <span>اقرأ الوصف</span>
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">استمتع بتجربة تسوق استثنااائية 🤩</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            استمتع بتجربة تسوق استثنااائية 🤩
+          </p>
         </div>
 
         {/* Description - changes based on selected variant */}
@@ -243,8 +287,8 @@ export default function CouponDetail() {
             <div
               key={selectedVariantId}
               className="text-foreground text-sm leading-relaxed mb-2 prose prose-sm max-w-none [&_h1]:text-xl [&_h1]:font-bold [&_h2]:text-lg [&_h2]:font-semibold [&_p]:my-1 animate-fade-in"
-              dangerouslySetInnerHTML={{ 
-                __html: sanitizeRichText(currentDescription)
+              dangerouslySetInnerHTML={{
+                __html: sanitizeRichText(currentDescription),
               }}
             />
           ) : (
@@ -266,19 +310,30 @@ export default function CouponDetail() {
 
         {/* Horizontal Scrollable Coupon Cards with Navigation */}
         {(() => {
-          const variants = coupon.variants && coupon.variants.length > 0 ? coupon.variants : [{ id: coupon.id, code: coupon.code, discountLabel: coupon.discount }];
+          const variants =
+            coupon.variants && coupon.variants.length > 0
+              ? coupon.variants
+              : [
+                  {
+                    id: coupon.id,
+                    code: coupon.code,
+                    discountLabel: coupon.discount,
+                  },
+                ];
 
-          const scrollToVariant = (direction: 'prev' | 'next') => {
-            const currentIdx = variants.findIndex(v => v.id === selectedVariantId);
-            let newIdx = direction === 'next' ? currentIdx + 1 : currentIdx - 1;
+          const scrollToVariant = (direction: "prev" | "next") => {
+            const currentIdx = variants.findIndex(
+              (v) => v.id === selectedVariantId
+            );
+            let newIdx = direction === "next" ? currentIdx + 1 : currentIdx - 1;
             if (newIdx < 0) newIdx = variants.length - 1;
             if (newIdx >= variants.length) newIdx = 0;
             const newVariant = variants[newIdx];
             setSelectedVariantId(newVariant.id);
             document.getElementById(`card-${newVariant.id}`)?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'nearest',
-              inline: 'center'
+              behavior: "smooth",
+              block: "nearest",
+              inline: "center",
             });
           };
 
@@ -300,9 +355,9 @@ export default function CouponDetail() {
             if (Math.abs(swipeDistance) > minSwipeDistance) {
               // RTL: swipe left = next, swipe right = prev
               if (swipeDistance > 0) {
-                scrollToVariant('prev');
+                scrollToVariant("prev");
               } else {
-                scrollToVariant('next');
+                scrollToVariant("next");
               }
             }
           };
@@ -310,23 +365,28 @@ export default function CouponDetail() {
           return (
             <>
               <div className="relative mb-6">
-
                 {/* Cards Container with Touch Swipe */}
-                <div 
+                <div
                   className="-mx-5 overflow-x-scroll scrollbar-hide snap-x snap-mandatory overscroll-x-contain"
-                  style={{ WebkitOverflowScrolling: 'touch', scrollSnapStop: 'always' }}
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                    scrollSnapStop: "always",
+                  }}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
                 >
-                  <div className="flex gap-1.5 px-5" style={{ width: 'max-content' }}>
+                  <div
+                    className="flex gap-1.5 px-5"
+                    style={{ width: "max-content" }}
+                  >
                     {coupon.variants && coupon.variants.length > 0 ? (
                       coupon.variants.map((variant) => (
-                        <div 
-                          key={variant.id} 
+                        <div
+                          key={variant.id}
                           id={`card-${variant.id}`}
                           className="flex-shrink-0 w-[62vw] sm:w-[55vw] md:w-[45vw] lg:w-[35vw] max-w-xs snap-start"
-                          style={{ scrollSnapStop: 'always' }}
+                          style={{ scrollSnapStop: "always" }}
                         >
                           <CouponTicket
                             code={variant.code}
@@ -336,17 +396,22 @@ export default function CouponDetail() {
                             isSelected={selectedVariantId === variant.id}
                             onSelect={() => {
                               setSelectedVariantId(variant.id);
-                              document.getElementById(`card-${variant.id}`)?.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'nearest',
-                                inline: 'center'
-                              });
+                              document
+                                .getElementById(`card-${variant.id}`)
+                                ?.scrollIntoView({
+                                  behavior: "smooth",
+                                  block: "nearest",
+                                  inline: "center",
+                                });
                             }}
                           />
                         </div>
                       ))
                     ) : (
-                      <div className="flex-shrink-0 w-[62vw] sm:w-[55vw] md:w-[45vw] lg:w-[35vw] max-w-xs snap-start" style={{ scrollSnapStop: 'always' }}>
+                      <div
+                        className="flex-shrink-0 w-[62vw] sm:w-[55vw] md:w-[45vw] lg:w-[35vw] max-w-xs snap-start"
+                        style={{ scrollSnapStop: "always" }}
+                      >
                         <CouponTicket
                           code={coupon.code}
                           discount={coupon.discount}
@@ -369,27 +434,56 @@ export default function CouponDetail() {
         <div className="flex gap-3">
           {/* Copy Code Button */}
           <button
-            onClick={() => handleCopyCode(currentCode, selectedVariantId || coupon.id)}
+            onClick={() =>
+              handleCopyCode(currentCode, selectedVariantId || coupon.id)
+            }
             className={cn(
-              "flex-1 py-3.5 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              "flex-1 py-3.5 rounded-xl font-bold text-base transition-all duration-300 relative overflow-hidden shadow-lg hover:brightness-110 hover:contrast-105"
             )}
+            style={{
+              backgroundImage: "url('/assets/high-lights2.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }}
           >
-            {copiedVariantId ? (
-              <>
-                <Check className="w-5 h-5" />
-                <span>تم النسخ</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-5 h-5" />
-                <span>انسخ الكود</span>
-                {currentCode && (
-                  <span className="opacity-60 text-sm overflow-hidden" style={{ width: '1.5ch' }}>
-                    {currentCode.slice(0, 2)}
-                  </span>
-                )}
-              </>
+            {/* FIRST LETTER – NO BACKGROUND, JUST TEXT */}
+            {!copiedVariantId && currentCode && (
+              <span
+                className="absolute select-none pointer-events-none"
+                style={{
+                  left: "10px", // الشمال
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  fontSize: "24px",
+                  fontWeight: 900,
+                
+                  mixBlendMode: "multiply", // IMPORTANT
+                }}
+              >
+                {currentCode.charAt(0).toUpperCase()}
+              </span>
             )}
+
+            {/* Button content */}
+            <div
+              className="relative z-10 flex items-center justify-center gap-2 text-primary-foreground"
+              style={{
+                paddingLeft: currentCode && !copiedVariantId ? "18px" : "0",
+              }}
+            >
+              {copiedVariantId ? (
+                <>
+                  <Check className="w-5 h-5" />
+                  <span>تم النسخ</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-5 h-5" />
+                  <span>انسخ الكود</span>
+                </>
+              )}
+            </div>
           </button>
 
           {/* Get Offer Button */}
@@ -400,7 +494,11 @@ export default function CouponDetail() {
               rel="noopener noreferrer"
               className="flex-1 py-3.5 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              <span>{selectedVariant?.offerButtonLabel || coupon.offerButtonLabel || 'احصل على العرض'}</span>
+              <span>
+                {selectedVariant?.offerButtonLabel ||
+                  coupon.offerButtonLabel ||
+                  "احصل على العرض"}
+              </span>
             </a>
           )}
         </div>
@@ -411,5 +509,3 @@ export default function CouponDetail() {
     </div>
   );
 }
-
-
