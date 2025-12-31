@@ -24,7 +24,7 @@ export interface Category {
   isActive?: boolean;
 }
 
-export type CountryCode = 'SA' | 'AE' | 'EG' | 'KW' | 'OM' | 'BH' | 'QA';
+export type CountryCode = "SA" | "AE" | "EG" | "KW" | "OM" | "BH" | "QA";
 
 export interface Country {
   code: CountryCode;
@@ -46,8 +46,9 @@ export interface Coupon {
   description: string;
   code: string;
   discount: string;
-  discountType: 'percentage' | 'fixed' | 'free_shipping';
+  discountType: "percentage" | "fixed" | "free_shipping";
   image: string;
+  ticketDescriptionAr?: string;
   terms: string[];
   expiryDate: string;
   isPopular: boolean;
@@ -121,6 +122,7 @@ export interface FirestoreCoupon {
   titleEn: string;
   descriptionAr: string;
   descriptionEn: string;
+  ticketDescriptionAr?: string;
   code: string;
   discountLabel: string;
   storeId: string;
@@ -141,7 +143,7 @@ export interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'new_coupon' | 'expiring' | 'general';
+  type: "new_coupon" | "expiring" | "general";
   isRead: boolean;
   createdAt: string;
   couponId?: string;

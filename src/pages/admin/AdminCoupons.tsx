@@ -1,17 +1,17 @@
-import { useState, useMemo } from 'react';
-import { AdminLayout } from '@/components/admin/AdminLayout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { RichTextEditor } from '@/components/admin/RichTextEditor';
+import { useState, useMemo } from "react";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -19,29 +19,38 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { 
-  useCoupons, 
-  useCountries, 
-  useCategories, 
-  useStores, 
-  addCoupon, 
-  updateCoupon, 
+} from "@/components/ui/dialog";
+import {
+  useCoupons,
+  useCountries,
+  useCategories,
+  useStores,
+  addCoupon,
+  updateCoupon,
   deleteCoupon,
-  timestampToString 
-} from '@/hooks/useFirestore';
-import { FirestoreCoupon, CouponVariant } from '@/data/types';
-import { Plus, Pencil, Trash2, Loader2, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
-import { toast } from 'sonner';
-import { Timestamp } from 'firebase/firestore';
-import { cn } from '@/lib/utils';
+  timestampToString,
+} from "@/hooks/useFirestore";
+import { FirestoreCoupon, CouponVariant } from "@/data/types";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Loader2,
+  Search,
+  X,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Timestamp } from "firebase/firestore";
+import { cn } from "@/lib/utils";
 
 // Generate unique ID for variants
 function generateVariantId() {
@@ -53,42 +62,45 @@ export default function AdminCoupons() {
   const { data: countries = [] } = useCountries();
   const { data: categories = [] } = useCategories();
   const { data: allStores = [] } = useStores();
-  
+
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingCoupon, setEditingCoupon] = useState<FirestoreCoupon | null>(null);
+  const [editingCoupon, setEditingCoupon] = useState<FirestoreCoupon | null>(
+    null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Filters
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterCountry, setFilterCountry] = useState<string>('');
-  const [filterCategory, setFilterCategory] = useState<string>('');
-  const [filterStore] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'newest' | 'popular'>('newest');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCountry, setFilterCountry] = useState<string>("");
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterStore] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"newest" | "popular">("newest");
 
   const [formData, setFormData] = useState({
-    titleAr: '',
-    descriptionAr: '',
-    code: '',
-    discountLabel: '',
-    storeId: '',
-    categoryId: '',
-    countryId: '',
-    linkUrl: '',
-    offerButtonLabel: '',
-    expiryDate: '',
+    titleAr: "",
+    descriptionAr: "",
+    code: "",
+    discountLabel: "",
+    storeId: "",
+    ticketDescriptionAr: "",
+    categoryId: "",
+    countryId: "",
+    linkUrl: "",
+    offerButtonLabel: "",
+    expiryDate: "",
     terms: [] as string[],
     isPopular: false,
     isActive: true,
     usageCount: 0,
     variants: [] as CouponVariant[],
   });
-  const [newTerm, setNewTerm] = useState('');
+  const [newTerm, setNewTerm] = useState("");
   const [showVariantsSection, setShowVariantsSection] = useState(false);
 
   // Filter stores by selected country
   const filteredStoresForForm = useMemo(() => {
     if (!formData.countryId) return allStores;
-    return allStores.filter(s => s.countryId === formData.countryId);
+    return allStores.filter((s) => s.countryId === formData.countryId);
   }, [allStores, formData.countryId]);
 
   // Filter and sort coupons
@@ -97,25 +109,26 @@ export default function AdminCoupons() {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(c => 
-        c.titleAr?.toLowerCase().includes(query) ||
-        c.code?.toLowerCase().includes(query)
+      result = result.filter(
+        (c) =>
+          c.titleAr?.toLowerCase().includes(query) ||
+          c.code?.toLowerCase().includes(query)
       );
     }
 
-    if (filterCountry && filterCountry !== 'ALL') {
-      result = result.filter(c => c.countryId === filterCountry);
+    if (filterCountry && filterCountry !== "ALL") {
+      result = result.filter((c) => c.countryId === filterCountry);
     }
 
-    if (filterCategory && filterCategory !== 'ALL') {
-      result = result.filter(c => c.categoryId === filterCategory);
+    if (filterCategory && filterCategory !== "ALL") {
+      result = result.filter((c) => c.categoryId === filterCategory);
     }
 
-    if (filterStore && filterStore !== 'ALL') {
-      result = result.filter(c => c.storeId === filterStore);
+    if (filterStore && filterStore !== "ALL") {
+      result = result.filter((c) => c.storeId === filterStore);
     }
 
-    if (sortBy === 'newest') {
+    if (sortBy === "newest") {
       result.sort((a, b) => {
         const dateA = a.createdAt?.toDate?.() || new Date(0);
         const dateB = b.createdAt?.toDate?.() || new Date(0);
@@ -126,27 +139,35 @@ export default function AdminCoupons() {
     }
 
     return result;
-  }, [coupons, searchQuery, filterCountry, filterCategory, filterStore, sortBy]);
+  }, [
+    coupons,
+    searchQuery,
+    filterCountry,
+    filterCategory,
+    filterStore,
+    sortBy,
+  ]);
 
   const resetForm = () => {
     setFormData({
-      titleAr: '',
-      descriptionAr: '',
-      code: '',
-      discountLabel: '',
-      storeId: '',
-      categoryId: '',
-      countryId: '',
-      linkUrl: '',
-      offerButtonLabel: '',
-      expiryDate: '',
+      titleAr: "",
+      descriptionAr: "",
+      code: "",
+      ticketDescriptionAr: "",
+      discountLabel: "",
+      storeId: "",
+      categoryId: "",
+      countryId: "",
+      linkUrl: "",
+      offerButtonLabel: "",
+      expiryDate: "",
       terms: [],
       isPopular: false,
       isActive: true,
       usageCount: 0,
       variants: [],
     });
-    setNewTerm('');
+    setNewTerm("");
     setEditingCoupon(null);
     setShowVariantsSection(false);
   };
@@ -159,15 +180,16 @@ export default function AdminCoupons() {
   const openEditDialog = (coupon: FirestoreCoupon) => {
     setEditingCoupon(coupon);
     setFormData({
-      titleAr: coupon.titleAr || '',
-      descriptionAr: coupon.descriptionAr || '',
-      code: coupon.code || '',
-      discountLabel: coupon.discountLabel || '',
-      storeId: coupon.storeId || '',
-      categoryId: coupon.categoryId || '',
-      countryId: coupon.countryId || '',
-      linkUrl: coupon.linkUrl || '',
-      offerButtonLabel: (coupon as any).offerButtonLabel || '',
+      titleAr: coupon.titleAr || "",
+      descriptionAr: coupon.descriptionAr || "",
+      code: coupon.code || "",
+      discountLabel: coupon.discountLabel || "",
+      storeId: coupon.storeId || "",
+      ticketDescriptionAr: (coupon as any).ticketDescriptionAr || "",
+      categoryId: coupon.categoryId || "",
+      countryId: coupon.countryId || "",
+      linkUrl: coupon.linkUrl || "",
+      offerButtonLabel: (coupon as any).offerButtonLabel || "",
       expiryDate: timestampToString(coupon.expiryDate),
       terms: coupon.terms || [],
       isPopular: coupon.isPopular || false,
@@ -190,6 +212,7 @@ export default function AdminCoupons() {
         titleEn: formData.titleAr, // Use Arabic for both
         descriptionAr: formData.descriptionAr,
         descriptionEn: formData.descriptionAr, // Use Arabic for both
+        ticketDescriptionAr: formData.ticketDescriptionAr,
         code: formData.code,
         discountLabel: formData.discountLabel,
         storeId: formData.storeId,
@@ -201,9 +224,11 @@ export default function AdminCoupons() {
         isPopular: formData.isPopular,
         isActive: formData.isActive,
         usageCount: formData.usageCount,
-        expiryDate: formData.expiryDate ? Timestamp.fromDate(new Date(formData.expiryDate)) : null,
+        expiryDate: formData.expiryDate
+          ? Timestamp.fromDate(new Date(formData.expiryDate))
+          : null,
       };
-      
+
       // Only add variants if there are any
       if (formData.variants.length > 0) {
         data.variants = formData.variants;
@@ -211,16 +236,16 @@ export default function AdminCoupons() {
 
       if (editingCoupon) {
         await updateCoupon(editingCoupon.id, data);
-        toast.success('تم تحديث الكوبون بنجاح');
+        toast.success("تم تحديث الكوبون بنجاح");
       } else {
         await addCoupon(data as any);
-        toast.success('تم إضافة الكوبون بنجاح');
+        toast.success("تم إضافة الكوبون بنجاح");
       }
       setDialogOpen(false);
       resetForm();
     } catch (error: any) {
       const errorMessage = error?.message || error?.code || String(error);
-      console.error('❌ Coupon Submit Error:', {
+      console.error("❌ Coupon Submit Error:", {
         error,
         message: errorMessage,
         code: error?.code,
@@ -233,14 +258,14 @@ export default function AdminCoupons() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الكوبون؟')) return;
-    
+    if (!confirm("هل أنت متأكد من حذف هذا الكوبون؟")) return;
+
     try {
       await deleteCoupon(id);
-      toast.success('تم حذف الكوبون بنجاح');
+      toast.success("تم حذف الكوبون بنجاح");
     } catch (error: any) {
       const errorMessage = error?.message || error?.code || String(error);
-      console.error('❌ Coupon Delete Error:', error);
+      console.error("❌ Coupon Delete Error:", error);
       toast.error(`خطأ في الحذف: ${errorMessage}`);
     }
   };
@@ -248,10 +273,10 @@ export default function AdminCoupons() {
   const handleToggleActive = async (coupon: FirestoreCoupon) => {
     try {
       await updateCoupon(coupon.id, { isActive: !coupon.isActive });
-      toast.success('تم تحديث الحالة');
+      toast.success("تم تحديث الحالة");
     } catch (error: any) {
       const errorMessage = error?.message || error?.code || String(error);
-      console.error('❌ Toggle Active Error:', error);
+      console.error("❌ Toggle Active Error:", error);
       toast.error(`خطأ: ${errorMessage}`);
     }
   };
@@ -259,14 +284,14 @@ export default function AdminCoupons() {
   const addTerm = () => {
     if (newTerm.trim()) {
       setFormData({ ...formData, terms: [...formData.terms, newTerm.trim()] });
-      setNewTerm('');
+      setNewTerm("");
     }
   };
 
   const removeTerm = (index: number) => {
-    setFormData({ 
-      ...formData, 
-      terms: formData.terms.filter((_, i) => i !== index) 
+    setFormData({
+      ...formData,
+      terms: formData.terms.filter((_, i) => i !== index),
     });
   };
 
@@ -274,12 +299,12 @@ export default function AdminCoupons() {
   const addVariant = () => {
     const newVariant: CouponVariant = {
       id: generateVariantId(),
-      labelAr: '',
-      code: '',
-      discountLabel: '',
-      descriptionAr: '',
-      linkUrl: '',
-      offerButtonLabel: '',
+      labelAr: "",
+      code: "",
+      discountLabel: "",
+      descriptionAr: "",
+      linkUrl: "",
+      offerButtonLabel: "",
       isDefault: formData.variants.length === 0, // First variant is default
     };
     setFormData({ ...formData, variants: [...formData.variants, newVariant] });
@@ -309,14 +334,13 @@ export default function AdminCoupons() {
   };
 
   const getStoreName = (storeId: string) => {
-    const store = allStores.find(s => s.id === storeId);
+    const store = allStores.find((s) => s.id === storeId);
     return store?.nameAr || storeId;
   };
 
-
   const getCountryFlag = (countryId: string) => {
-    const country = countries.find(c => c.id === countryId);
-    return country?.flag || '';
+    const country = countries.find((c) => c.id === countryId);
+    return country?.flag || "";
   };
 
   return (
@@ -349,7 +373,9 @@ export default function AdminCoupons() {
               <SelectContent>
                 <SelectItem value="ALL">الكل</SelectItem>
                 {countries.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.flag} {c.nameAr}</SelectItem>
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.flag} {c.nameAr}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -360,7 +386,9 @@ export default function AdminCoupons() {
               <SelectContent>
                 <SelectItem value="ALL">الكل</SelectItem>
                 {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.icon} {c.nameAr}</SelectItem>
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.icon} {c.nameAr}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -399,15 +427,22 @@ export default function AdminCoupons() {
               <TableBody>
                 {filteredCoupons.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                    <TableCell
+                      colSpan={9}
+                      className="text-center text-muted-foreground py-8"
+                    >
                       لا توجد كوبونات
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredCoupons.map((coupon) => (
                     <TableRow key={coupon.id}>
-                      <TableCell className="font-mono text-sm">{coupon.code}</TableCell>
-                      <TableCell className="max-w-[200px] truncate">{coupon.titleAr}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {coupon.code}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {coupon.titleAr}
+                      </TableCell>
                       <TableCell>{getStoreName(coupon.storeId)}</TableCell>
                       <TableCell>{coupon.discountLabel}</TableCell>
                       <TableCell>{getCountryFlag(coupon.countryId)}</TableCell>
@@ -417,7 +452,9 @@ export default function AdminCoupons() {
                             {coupon.variants.length} متغير
                           </span>
                         ) : (
-                          <span className="text-muted-foreground text-xs">-</span>
+                          <span className="text-muted-foreground text-xs">
+                            -
+                          </span>
                         )}
                       </TableCell>
                       <TableCell>{coupon.usageCount || 0}</TableCell>
@@ -455,10 +492,13 @@ export default function AdminCoupons() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent dir="rtl" className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent
+          dir="rtl"
+          className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        >
           <DialogHeader>
             <DialogTitle>
-              {editingCoupon ? 'تعديل الكوبون' : 'إضافة كوبون جديد'}
+              {editingCoupon ? "تعديل الكوبون" : "إضافة كوبون جديد"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -467,7 +507,12 @@ export default function AdminCoupons() {
                 <Label>كود الكوبون الرئيسي</Label>
                 <Input
                   value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
                   placeholder="SAVE20"
                   required
                   className="font-mono"
@@ -477,7 +522,9 @@ export default function AdminCoupons() {
                 <Label>الخصم الرئيسي</Label>
                 <Input
                   value={formData.discountLabel}
-                  onChange={(e) => setFormData({ ...formData, discountLabel: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, discountLabel: e.target.value })
+                  }
                   placeholder="20% أو شحن مجاني"
                   required
                 />
@@ -489,14 +536,18 @@ export default function AdminCoupons() {
                 <Label>الدولة</Label>
                 <Select
                   value={formData.countryId}
-                  onValueChange={(value) => setFormData({ ...formData, countryId: value, storeId: '' })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, countryId: value, storeId: "" })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="اختر" />
                   </SelectTrigger>
                   <SelectContent>
                     {countries.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.flag} {c.nameAr}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.flag} {c.nameAr}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -505,14 +556,18 @@ export default function AdminCoupons() {
                 <Label>المتجر</Label>
                 <Select
                   value={formData.storeId}
-                  onValueChange={(value) => setFormData({ ...formData, storeId: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, storeId: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="اختر" />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredStoresForForm.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>{s.nameAr}</SelectItem>
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.nameAr}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -521,14 +576,18 @@ export default function AdminCoupons() {
                 <Label>التصنيف</Label>
                 <Select
                   value={formData.categoryId}
-                  onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, categoryId: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="اختر" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.icon} {c.nameAr}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.icon} {c.nameAr}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -539,7 +598,9 @@ export default function AdminCoupons() {
               <Label>العنوان</Label>
               <Input
                 value={formData.titleAr}
-                onChange={(e) => setFormData({ ...formData, titleAr: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, titleAr: e.target.value })
+                }
                 placeholder="خصم 20% على جميع المنتجات"
                 required
               />
@@ -549,8 +610,23 @@ export default function AdminCoupons() {
               <Label>الوصف (يدعم HTML)</Label>
               <RichTextEditor
                 value={formData.descriptionAr}
-                onChange={(value) => setFormData({ ...formData, descriptionAr: value })}
+                onChange={(value) =>
+                  setFormData({ ...formData, descriptionAr: value })
+                }
                 dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>وصف التذكرة</Label>
+              <Input
+                value={(formData as any).ticketDescriptionAr || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...(formData as any),
+                    ticketDescriptionAr: e.target.value,
+                  })
+                }
+                placeholder="مثال: *الشروط والأحكام"
               />
             </div>
 
@@ -559,7 +635,9 @@ export default function AdminCoupons() {
                 <Label>رابط العرض</Label>
                 <Input
                   value={formData.linkUrl}
-                  onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, linkUrl: e.target.value })
+                  }
                   placeholder="https://store.com/offer"
                   type="url"
                 />
@@ -568,7 +646,12 @@ export default function AdminCoupons() {
                 <Label>اسم زر العرض</Label>
                 <Input
                   value={formData.offerButtonLabel}
-                  onChange={(e) => setFormData({ ...formData, offerButtonLabel: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      offerButtonLabel: e.target.value,
+                    })
+                  }
                   placeholder="احصل على العرض"
                 />
               </div>
@@ -578,7 +661,9 @@ export default function AdminCoupons() {
               <Label>تاريخ الانتهاء</Label>
               <Input
                 value={formData.expiryDate}
-                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, expiryDate: e.target.value })
+                }
                 type="date"
               />
             </div>
@@ -604,17 +689,18 @@ export default function AdminCoupons() {
                   <ChevronDown className="w-5 h-5" />
                 )}
               </button>
-              
+
               {showVariantsSection && (
                 <div className="p-4 space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    أضف متغيرات مختلفة للكوبون (مثل: للمستخدم الجديد، للمستخدم القديم)
+                    أضف متغيرات مختلفة للكوبون (مثل: للمستخدم الجديد، للمستخدم
+                    القديم)
                   </p>
-                  
+
                   {/* Variants List */}
                   {formData.variants.map((variant, index) => (
-                    <div 
-                      key={variant.id} 
+                    <div
+                      key={variant.id}
                       className={cn(
                         "border rounded-lg p-4 space-y-3",
                         variant.isDefault && "border-primary bg-primary/5"
@@ -629,7 +715,9 @@ export default function AdminCoupons() {
                             className="w-4 h-4 text-primary"
                           />
                           <span className="text-sm font-medium">
-                            {variant.isDefault ? 'افتراضي' : 'متغير ' + (index + 1)}
+                            {variant.isDefault
+                              ? "افتراضي"
+                              : "متغير " + (index + 1)}
                           </span>
                         </div>
                         <Button
@@ -641,23 +729,29 @@ export default function AdminCoupons() {
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
                       </div>
-                      
+
                       <div className="space-y-1">
-                          <Label className="text-xs">اسم المتغير</Label>
-                          <Input
-                            value={variant.labelAr}
-                            onChange={(e) => updateVariant(index, { labelAr: e.target.value })}
-                            placeholder="للمستخدم الجديد"
-                            className="h-9"
-                          />
-                        </div>
-                      
+                        <Label className="text-xs">اسم المتغير</Label>
+                        <Input
+                          value={variant.labelAr}
+                          onChange={(e) =>
+                            updateVariant(index, { labelAr: e.target.value })
+                          }
+                          placeholder="للمستخدم الجديد"
+                          className="h-9"
+                        />
+                      </div>
+
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label className="text-xs">الكود</Label>
                           <Input
                             value={variant.code}
-                            onChange={(e) => updateVariant(index, { code: e.target.value.toUpperCase() })}
+                            onChange={(e) =>
+                              updateVariant(index, {
+                                code: e.target.value.toUpperCase(),
+                              })
+                            }
                             placeholder="NEW20"
                             className="h-9 font-mono"
                           />
@@ -666,28 +760,36 @@ export default function AdminCoupons() {
                           <Label className="text-xs">الخصم</Label>
                           <Input
                             value={variant.discountLabel}
-                            onChange={(e) => updateVariant(index, { discountLabel: e.target.value })}
+                            onChange={(e) =>
+                              updateVariant(index, {
+                                discountLabel: e.target.value,
+                              })
+                            }
                             placeholder="30% + هدية"
                             className="h-9"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-1">
                         <Label className="text-xs">الوصف (يدعم HTML)</Label>
                         <RichTextEditor
-                          value={variant.descriptionAr || ''}
-                          onChange={(value) => updateVariant(index, { descriptionAr: value })}
+                          value={variant.descriptionAr || ""}
+                          onChange={(value) =>
+                            updateVariant(index, { descriptionAr: value })
+                          }
                           dir="rtl"
                         />
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label className="text-xs">رابط خاص</Label>
                           <Input
-                            value={variant.linkUrl || ''}
-                            onChange={(e) => updateVariant(index, { linkUrl: e.target.value })}
+                            value={variant.linkUrl || ""}
+                            onChange={(e) =>
+                              updateVariant(index, { linkUrl: e.target.value })
+                            }
                             placeholder="https://store.com/new-user-offer"
                             type="url"
                             className="h-9"
@@ -696,8 +798,12 @@ export default function AdminCoupons() {
                         <div className="space-y-1">
                           <Label className="text-xs">اسم زر العرض</Label>
                           <Input
-                            value={variant.offerButtonLabel || ''}
-                            onChange={(e) => updateVariant(index, { offerButtonLabel: e.target.value })}
+                            value={variant.offerButtonLabel || ""}
+                            onChange={(e) =>
+                              updateVariant(index, {
+                                offerButtonLabel: e.target.value,
+                              })
+                            }
                             placeholder="احصل على العرض"
                             className="h-9"
                           />
@@ -705,7 +811,7 @@ export default function AdminCoupons() {
                       </div>
                     </div>
                   ))}
-                  
+
                   <Button
                     type="button"
                     variant="outline"
@@ -727,14 +833,21 @@ export default function AdminCoupons() {
                   value={newTerm}
                   onChange={(e) => setNewTerm(e.target.value)}
                   placeholder="أضف شرطاً..."
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTerm())}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && (e.preventDefault(), addTerm())
+                  }
                 />
-                <Button type="button" variant="outline" onClick={addTerm}>إضافة</Button>
+                <Button type="button" variant="outline" onClick={addTerm}>
+                  إضافة
+                </Button>
               </div>
               {formData.terms.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.terms.map((term, i) => (
-                    <span key={i} className="bg-muted px-2 py-1 rounded text-sm flex items-center gap-1">
+                    <span
+                      key={i}
+                      className="bg-muted px-2 py-1 rounded text-sm flex items-center gap-1"
+                    >
                       {term}
                       <button type="button" onClick={() => removeTerm(i)}>
                         <X className="w-3 h-3" />
@@ -751,20 +864,29 @@ export default function AdminCoupons() {
                 <Input
                   type="number"
                   value={formData.usageCount}
-                  onChange={(e) => setFormData({ ...formData, usageCount: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      usageCount: parseInt(e.target.value) || 0,
+                    })
+                  }
                 />
               </div>
               <div className="flex items-center gap-2 pt-6">
                 <Switch
                   checked={formData.isPopular}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isPopular: checked })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isPopular: checked })
+                  }
                 />
                 <Label>شائع</Label>
               </div>
               <div className="flex items-center gap-2 pt-6">
                 <Switch
                   checked={formData.isActive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, isActive: checked })
+                  }
                 />
                 <Label>مفعّل</Label>
               </div>
@@ -775,9 +897,9 @@ export default function AdminCoupons() {
                 {isSubmitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : editingCoupon ? (
-                  'تحديث'
+                  "تحديث"
                 ) : (
-                  'إضافة'
+                  "إضافة"
                 )}
               </Button>
             </DialogFooter>

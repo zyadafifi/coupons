@@ -6,6 +6,7 @@ interface CouponTicketProps {
   descriptionAr?: string;
   storeLogo?: string;
   storeLogoUrl?: string;
+  ticketDescriptionAr?: string;
   isSelected?: boolean;
   onSelect?: () => void;
 }
@@ -16,12 +17,15 @@ export function CouponTicket({
   descriptionAr,
   storeLogo,
   storeLogoUrl,
+  ticketDescriptionAr,
   isSelected = false,
   onSelect,
 }: CouponTicketProps) {
   const handleCardClick = () => {
     onSelect?.();
   };
+
+  const ticketText = ticketDescriptionAr?.trim() || "*الشروط والأحكام";
 
   return (
     <div
@@ -82,17 +86,12 @@ export function CouponTicket({
             {discount}
           </p>
 
-          {/* Description Text */}
-          {descriptionAr && (
-            <p className="text-sm sm:text-base text-foreground mb-3 leading-relaxed">
-              {descriptionAr}
-            </p>
-          )}
+          <p className="text-xs sm:text-sm text-primary mb-4">{ticketText}</p>
 
           {/* Terms Text */}
-          <p className="text-xs sm:text-sm text-primary mb-4">
-            الشروط والأحكام
-          </p>
+          {/* <p className="text-xs sm:text-sm text-primary mb-4">
+            وصف التذكرة
+          </p> */}
 
           {/* Horizontal Line */}
           <div className="bg-[#d9dbdf] h-px my-4 -mx-4 sm:-mx-5"></div>

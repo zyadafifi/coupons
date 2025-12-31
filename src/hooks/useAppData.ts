@@ -67,6 +67,8 @@ function firestoreCouponToApp(
     storeLogoUrl: store?.logoUrl || '',
     // Category display fields (pre-resolved)
     categoryName: category?.nameAr || category?.nameEn || '',
+    ticketDescriptionAr: fc.ticketDescriptionAr || '',
+
     // Variants for different user types
     variants,
   };

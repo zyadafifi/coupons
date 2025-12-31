@@ -399,6 +399,7 @@ export default function CouponDetail() {
                             }
                             storeLogo={storeLogo}
                             storeLogoUrl={storeLogoUrl}
+                            ticketDescriptionAr={coupon.ticketDescriptionAr}
                             isSelected={selectedVariantId === variant.id}
                             onSelect={() => {
                               setSelectedVariantId(variant.id);
