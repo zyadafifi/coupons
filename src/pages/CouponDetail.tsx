@@ -463,7 +463,7 @@ export default function CouponDetail() {
               <span
                 className="absolute select-none pointer-events-none"
                 style={{
-                  left: "10px", // الشمال
+                  left: "3px", // الشمال
                   top: "50%",
                   transform: "translateY(-50%)",
                   fontSize: "24px",
