@@ -91,7 +91,7 @@ export function CouponTicket({
 
           {/* Terms Text */}
           <p className="text-xs sm:text-sm text-primary mb-4">
-            *الشروط والأحكام
+            الشروط والأحكام
           </p>
 
           {/* Horizontal Line */}
