@@ -105,5 +105,7 @@ export function CouponTicket({
         </div>
       </div>
     </div>
+    
   );
 }
+

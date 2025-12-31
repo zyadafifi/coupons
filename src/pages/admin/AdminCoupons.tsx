@@ -212,7 +212,7 @@ export default function AdminCoupons() {
         titleEn: formData.titleAr, // Use Arabic for both
         descriptionAr: formData.descriptionAr,
         descriptionEn: formData.descriptionAr, // Use Arabic for both
-        ticketDescriptionAr: formData.ticketDescriptionAr,
+        ticketDescriptionAr: formData.ticketDescriptionAr ?? "",
         code: formData.code,
         discountLabel: formData.discountLabel,
         storeId: formData.storeId,
