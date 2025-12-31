@@ -170,3 +170,30 @@
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+/* Centering padding for coupon cards scroll container */
+.coupon-scroll-padding {
+  padding-left: 11vw;
+  padding-right: 11vw;
+}
+
+@media (min-width: 640px) {
+  .coupon-scroll-padding {
+    padding-left: 22.5vw;
+    padding-right: 22.5vw;
+  }
+}
+
+@media (min-width: 768px) {
+  .coupon-scroll-padding {
+    padding-left: 27.5vw;
+    padding-right: 27.5vw;
+  }
+}
+
+@media (min-width: 1024px) {
+  .coupon-scroll-padding {
+    padding-left: 32.5vw;
+    padding-right: 32.5vw;
+  }
+}

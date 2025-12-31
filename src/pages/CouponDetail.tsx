@@ -377,7 +377,7 @@ export default function CouponDetail() {
                   onTouchEnd={handleTouchEnd}
                 >
                   <div
-                    className="flex gap-1.5 px-5"
+                    className="flex gap-1.5 coupon-scroll-padding"
                     style={{ width: "max-content" }}
                   >
                     {coupon.variants && coupon.variants.length > 0 ? (
