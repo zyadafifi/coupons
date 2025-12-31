@@ -30,7 +30,7 @@ export function CouponTicket({
   return (
     <div
       className={cn(
-        "ticket-container relative w-full min-w-[400px] max-w-full mx-auto cursor-pointer transition-transform duration-200 hover:scale-[1.02] mb-4 pr-2",
+        "ticket-container relative w-full block cursor-pointer transition-transform duration-200 hover:scale-[1.02] mb-4",
         isSelected && "scale-[1.02]"
       )}
       onClick={handleCardClick}
@@ -38,7 +38,7 @@ export function CouponTicket({
       {/* Main Ticket Card - Rounded container with shadow */}
       <div
         className={cn(
-          "relative overflow-hidden rounded-[20px] sm:rounded-[24px] shadow-lg bg-card transition-all duration-200"
+          "relative w-full overflow-hidden rounded-[20px] sm:rounded-[24px] shadow-lg bg-card transition-all duration-200"
         )}
       >
         {/* Top Panel */}
@@ -105,7 +105,5 @@ export function CouponTicket({
         </div>
       </div>
     </div>
-    
   );
 }
-
