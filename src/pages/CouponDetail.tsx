@@ -391,6 +391,12 @@ export default function CouponDetail() {
                           <CouponTicket
                             code={variant.code}
                             discount={variant.discountLabel}
+                            descriptionAr={
+                              variant.descriptionAr ||
+                              coupon?.descriptionAr ||
+                              coupon?.description ||
+                              ""
+                            }
                             storeLogo={storeLogo}
                             storeLogoUrl={storeLogoUrl}
                             isSelected={selectedVariantId === variant.id}
@@ -415,6 +421,9 @@ export default function CouponDetail() {
                         <CouponTicket
                           code={coupon.code}
                           discount={coupon.discount}
+                          descriptionAr={
+                            coupon.descriptionAr || coupon.description || ""
+                          }
                           storeLogo={storeLogo}
                           storeLogoUrl={storeLogoUrl}
                           isSelected={true}
@@ -457,7 +466,7 @@ export default function CouponDetail() {
                   transform: "translateY(-50%)",
                   fontSize: "24px",
                   fontWeight: 900,
-                
+
                   mixBlendMode: "multiply", // IMPORTANT
                 }}
               >
