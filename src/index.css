@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 @tailwind base;
@@ -35,7 +35,8 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif,
+      Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 
   * {
@@ -43,12 +44,14 @@
   }
 
   html {
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     -webkit-tap-highlight-color: transparent;
     /* Prevent text selection on mobile for better UX */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    /* Prevent white flash on launch */
+    background-color: #000;
   }
 
   body {
@@ -56,15 +59,27 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     /* Enable momentum scrolling on iOS */
     -webkit-overflow-scrolling: touch;
+    /* Prevent white flash on launch */
+    background-color: #000;
+    margin: 0;
+  }
+
+  /* Prevent white flash - ensure root container is black before React mounts */
+  #root {
+    background-color: #000;
+    min-height: 100vh;
   }
 
   /* Allow text selection in input fields and content areas */
-  input, textarea, [contenteditable] {
+  input,
+  textarea,
+  [contenteditable] {
     -webkit-user-select: text;
     user-select: text;
   }
   .dark {
-    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif,
+      Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   }
 }
 
@@ -95,15 +110,15 @@
   }
 
   .shadow-card {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .shadow-header {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   .shadow-logo {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   /* Mobile touch optimizations */
