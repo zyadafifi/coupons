@@ -86,7 +86,9 @@ export function CouponTicket({
             {discount}
           </p>
 
-          <p className="text-xs sm:text-sm text-primary mb-4">{ticketText}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mb-4">
+            {ticketText}
+          </p>
 
           {/* Terms Text */}
           {/* <p className="text-xs sm:text-sm text-primary mb-4">
