@@ -1,0 +1,85 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+
+# Build outputs (never commit these)
+dist
+dist-ssr
+build
+*.local
+
+# Environment variables (SECURITY: Never commit secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env*.local
+.env.backup
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Capacitor (platforms are managed by Capacitor CLI)
+android/
+ios/
+.capacitor/
+
+# Capacitor build artifacts
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/**/*.iml
+ios/App/Pods/
+ios/App/*.xcworkspace/xcuserdata/
+
+# Firebase config files (sensitive)
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist
+
+# Service account keys (SECURITY: Never commit)
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk*.json
+
+# Build artifacts & archives
+*.tgz
+*.zip
+*.tar.gz
+build/
+
+# Package manager lock files (if not using them)
+# Uncomment if using only npm:
+# yarn.lock
+# pnpm-lock.yaml
+# bun.lockb
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*~
+temp_icon.png
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini

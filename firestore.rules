@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == "oUxrGdnAHcXfgd2ILDUv4mKdIcx2";
+    }
+
+    // SETTINGS (documents)
+    match /settings/{docId} {
+      allow read, write: if isAdmin();
+    }
+    // SETTINGS (any subcollections under settings)
+    match /settings/{docId}/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // LEADS
+    match /leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // PUBLIC READ DATA + ADMIN WRITE
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /countries/{countryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /stores/{storeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ADMINS COLLECTION - Allow users to read their own admin document
+    // This is used for admin verification fallback method
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if isAdmin();
+    }
+
+    // DEFAULT DENY
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

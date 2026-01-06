@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="كوبونات" />
+    <meta
+      name="description"
+      content="اكتشف أفضل كوبونات الخصم والعروض من متاجرك المفضلة"
+    />
+
+    <!-- Preconnect to external origins for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://i.ibb.co" />
+    <link rel="preconnect" href="https://saving-b35f3.firebaseapp.com" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preload" as="image" href="/splash-animation.webp" />
+
+    <meta property="og:title" content="كوبونات - أفضل كوبونات الخصم" />
+    <meta
+      property="og:description"
+      content="اكتشف أفضل كوبونات الخصم والعروض من متاجرك المفضلة"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <title>كوبونات - أفضل كوبونات الخصم</title>
+
+    <!-- Prevent white flash on launch - black background before React loads -->
+    <style>
+      html,
+      body {
+        background: #000;
+        margin: 0;
+        padding: 0;
+      }
+      #root {
+        min-height: 100vh;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
