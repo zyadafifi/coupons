@@ -222,7 +222,7 @@ export default function Onboarding() {
         <div className="relative pt-16 pb-10 px-6 animate-fade-in">
           {/* Logo */}
           <div 
-            className="w-20 h-20 mx-auto mb-6 bg-primary rounded-2xl flex items-center justify-center shadow-lg animate-slide-up"
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-lg animate-slide-up"
             style={{ animationDelay: '0.1s' }}
           >
             <Logo size="lg" showText={false} />
