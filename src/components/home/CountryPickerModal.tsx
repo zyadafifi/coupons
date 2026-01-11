@@ -44,7 +44,7 @@ export function CountryPickerModal() {
           
           <div className="relative pt-8 pb-6 px-6 animate-fade-in">
             {/* Logo from settings */}
-            <div className="w-16 h-16 mx-auto mb-4 bg-primary rounded-2xl flex items-center justify-center shadow-lg animate-slide-up overflow-hidden" style={{
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg animate-slide-up overflow-hidden" style={{
             animationDelay: '0.1s'
           }}>
               <img src={settings.logoUrl} alt={settings.appName} onError={e => {
