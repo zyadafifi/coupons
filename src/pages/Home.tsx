@@ -13,7 +13,6 @@ import { FilterSheet, SortOption } from "@/components/shared/FilterSheet";
 import { useActiveCoupons, useActiveCategories } from "@/hooks/useAppData";
 import { useApp } from "@/contexts/AppContext";
 import { couponsCopy } from "@/content/couponsCopy.ar";
-import { CouponBanner } from "@/components/home/CouponBanner";
 
 export default function Home() {
   const { selectedCountry } = useApp();
@@ -233,12 +232,6 @@ export default function Home() {
                   >
                     <CouponCard coupon={coupon} />
                   </div>
-                  {/* Show banner after 2nd coupon (index 1) */}
-                  {index === 1 && (
-                    <div className="animate-slide-up mt-3" style={{ animationDelay: `${0.1 + (index + 1) * 0.08}s` }}>
-                      <CouponBanner />
-                    </div>
-                  )}
                 </div>
               ))
             ) : (
