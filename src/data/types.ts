@@ -159,3 +159,31 @@ export interface PhoneCountry {
   flag: string;
   placeholder: string; // e.g., "5XXXXXXXX"
 }
+
+// Store Request
+export interface FirestoreStoreRequest {
+  id: string;
+  storeName: string;
+  storeUrl?: string;
+  notes?: string;
+  countryId: string;
+  deviceId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: any; // Firestore Timestamp
+  reviewedAt?: any; // Firestore Timestamp
+  reviewedBy?: string;
+  adminReply?: string;
+  storeId?: string; // Created store ID if approved
+}
+
+// User Notification
+export interface FirestoreNotification {
+  id: string;
+  deviceId: string;
+  title: string;
+  message: string;
+  type: 'store_request_approved' | 'store_request_rejected' | 'general';
+  relatedId?: string; // Store request ID, coupon ID, etc.
+  isRead: boolean;
+  createdAt: any; // Firestore Timestamp
+}

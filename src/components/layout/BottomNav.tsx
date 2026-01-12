@@ -1,16 +1,23 @@
-import { Home, Heart, MoreHorizontal } from 'lucide-react';
+import { Home, Heart, Bell, MoreHorizontal } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { path: '/', label: 'الرئيسية', icon: Home },
-  { path: '/favorites', label: 'المفضلة', icon: Heart },
-  { path: '/more', label: 'للمزيد', icon: MoreHorizontal },
-];
+import { useNotifications } from '@/hooks/useFirestore';
+import { getDeviceId } from '@/hooks/useLeads';
 
 export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const deviceId = getDeviceId();
+  const { data: notifications } = useNotifications(deviceId);
+  
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  const navItems = [
+    { path: '/', label: 'الرئيسية', icon: Home },
+    { path: '/favorites', label: 'المفضلة', icon: Heart },
+    { path: '/notifications', label: 'الإشعارات', icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
+    { path: '/more', label: 'للمزيد', icon: MoreHorizontal },
+  ];
 
   // Hide on coupon detail page
   if (location.pathname.startsWith('/coupon/')) {

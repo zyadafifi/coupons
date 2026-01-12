@@ -19,6 +19,8 @@ import {
   FirestoreCategory,
   FirestoreStore,
   FirestoreCoupon,
+  FirestoreStoreRequest,
+  FirestoreNotification,
 } from '@/data/types';
 
 // Generic hook for Firestore collection
@@ -185,4 +187,123 @@ export function timestampToString(timestamp: any): string {
     return timestamp.toDate().toISOString().split('T')[0];
   }
   return timestamp;
+}
+
+// Store Requests
+export function useStoreRequests(statusFilter?: 'pending' | 'approved' | 'rejected') {
+  const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')];
+  if (statusFilter) {
+    constraints.unshift(where('status', '==', statusFilter));
+  }
+  return useCollection<FirestoreStoreRequest>('store_requests', constraints);
+}
+
+export async function addStoreRequest(data: Omit<FirestoreStoreRequest, 'id' | 'createdAt' | 'status'>) {
+  const docRef = await addDoc(collection(db, 'store_requests'), {
+    ...data,
+    status: 'pending',
+    createdAt: Timestamp.now(),
+  });
+  return docRef.id;
+}
+
+export async function updateStoreRequest(id: string, data: Partial<FirestoreStoreRequest>) {
+  await updateDoc(doc(db, 'store_requests', id), data);
+}
+
+export async function approveStoreRequest(
+  requestId: string,
+  storeData: Omit<FirestoreStore, 'id'>,
+  reviewedBy: string
+): Promise<string> {
+  // Create the store first
+  const storeId = await addStore(storeData);
+  
+  // Update the request
+  await updateDoc(doc(db, 'store_requests', requestId), {
+    status: 'approved',
+    reviewedAt: Timestamp.now(),
+    reviewedBy,
+    storeId,
+  });
+  
+  return storeId;
+}
+
+export async function rejectStoreRequest(
+  requestId: string,
+  adminReply: string,
+  reviewedBy: string
+) {
+  await updateDoc(doc(db, 'store_requests', requestId), {
+    status: 'rejected',
+    reviewedAt: Timestamp.now(),
+    reviewedBy,
+    adminReply,
+  });
+}
+
+// Notifications
+// Note: We intentionally avoid using orderBy to prevent needing a composite index
+// (deviceId + createdAt). Since notification volume per device is small, we sort client-side.
+export function useNotifications(deviceId: string) {
+  const [data, setData] = useState<FirestoreNotification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only filter by deviceId to avoid composite index requirement
+    const q = query(
+      collection(db, 'notifications'),
+      where('deviceId', '==', deviceId)
+    );
+    
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as FirestoreNotification[];
+        
+        // Client-side sorting by createdAt DESC
+        // Safely handle Firestore Timestamps and missing values
+        const toMillis = (timestamp: any): number => {
+          if (!timestamp) return 0;
+          if (timestamp.toMillis) return timestamp.toMillis();
+          if (timestamp.seconds) return timestamp.seconds * 1000;
+          return 0;
+        };
+        
+        items.sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
+        
+        setData(items);
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Firestore error:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [deviceId]);
+
+  return { data, loading, error };
+}
+
+export async function addNotification(data: Omit<FirestoreNotification, 'id' | 'createdAt' | 'isRead'>) {
+  const docRef = await addDoc(collection(db, 'notifications'), {
+    ...data,
+    isRead: false,
+    createdAt: Timestamp.now(),
+  });
+  return docRef.id;
+}
+
+export async function markNotificationAsRead(id: string) {
+  await updateDoc(doc(db, 'notifications', id), {
+    isRead: true,
+  });
 }

@@ -10,7 +10,8 @@ import {
   Ticket, 
   LogOut,
   Settings,
-  ChevronRight
+  ChevronRight,
+  PackagePlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: '/admin/countries', label: 'الدول', icon: Globe },
     { href: '/admin/categories', label: 'التصنيفات', icon: Tags },
     { href: '/admin/stores', label: 'المتاجر', icon: Store },
+    { href: '/admin/store-requests', label: 'طلبات المتاجر', icon: PackagePlus },
     { href: '/admin/coupons', label: 'الكوبونات', icon: Ticket },
     { href: '/admin/settings', label: 'الإعدادات', icon: Settings },
   ];

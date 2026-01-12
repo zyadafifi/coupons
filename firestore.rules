@@ -22,6 +22,25 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // STORE REQUESTS
+    match /store_requests/{requestId} {
+      allow create: if true
+        && request.resource.data.storeName is string
+        && request.resource.data.storeName.size() > 2
+        && request.resource.data.countryId is string
+        && request.resource.data.deviceId is string
+        && request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // NOTIFICATIONS
+    match /notifications/{notificationId} {
+      // Users can read their own notifications by deviceId
+      allow read: if true;
+      // Only admins can create/write notifications
+      allow write: if isAdmin();
+    }
+
     // PUBLIC READ DATA + ADMIN WRITE
     match /coupons/{couponId} {
       allow read: if true;

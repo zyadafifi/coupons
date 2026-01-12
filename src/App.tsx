@@ -12,6 +12,7 @@ import { isAdminEnabled } from "@/config/env";
 import Home from "./pages/Home";
 import CouponDetail from "./pages/CouponDetail";
 import Favorites from "./pages/Favorites";
+import Notifications from "./pages/Notifications";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -26,6 +27,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCountries from "./pages/admin/AdminCountries";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminStores from "./pages/admin/AdminStores";
+import AdminStoreRequests from "./pages/admin/AdminStoreRequests";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminLeads from "./pages/admin/AdminLeads";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -89,6 +91,14 @@ const App = () => {
                         }
                       />
                       <Route
+                        path="/admin/store-requests"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminStoreRequests />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/admin/coupons"
                         element={
                           <AdminProtectedRoute>
@@ -147,6 +157,14 @@ const App = () => {
                     element={
                       <AppLayout>
                         <Favorites />
+                      </AppLayout>
+                    }
+                  />
+                  <Route
+                    path="/notifications"
+                    element={
+                      <AppLayout>
+                        <Notifications />
                       </AppLayout>
                     }
                   />
