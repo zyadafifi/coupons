@@ -61,13 +61,31 @@ export default function More() {
     try {
       const deviceId = getDeviceId();
 
-      await addStoreRequest({
+      // Build payload without undefined fields (Firestore doesn't allow undefined)
+      const payload: {
+        storeName: string;
+        countryId: string;
+        deviceId: string;
+        storeUrl?: string;
+        notes?: string;
+      } = {
         storeName: requestForm.storeName.trim(),
-        storeUrl: requestForm.storeUrl.trim() || undefined,
-        notes: requestForm.notes.trim() || undefined,
         countryId,
         deviceId,
-      });
+      };
+
+      // Only include optional fields if they have values
+      const storeUrl = requestForm.storeUrl.trim();
+      if (storeUrl) {
+        payload.storeUrl = storeUrl;
+      }
+
+      const notes = requestForm.notes.trim();
+      if (notes) {
+        payload.notes = notes;
+      }
+
+      await addStoreRequest(payload);
 
       toast({
         title: "تم إرسال الطلب بنجاح",

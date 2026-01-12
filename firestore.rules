@@ -33,14 +33,6 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // NOTIFICATIONS
-    match /notifications/{notificationId} {
-      // Users can read their own notifications by deviceId
-      allow read: if true;
-      // Only admins can create/write notifications
-      allow write: if isAdmin();
-    }
-
     // PUBLIC READ DATA + ADMIN WRITE
     match /coupons/{couponId} {
       allow read: if true;

@@ -43,7 +43,6 @@ import {
   useCountries,
   approveStoreRequest,
   rejectStoreRequest,
-  addNotification,
 } from '@/hooks/useFirestore';
 import { FirestoreStoreRequest } from '@/data/types';
 import { Check, X, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
@@ -138,15 +137,6 @@ export default function AdminStoreRequests() {
         user.email
       );
 
-      // Send notification to user
-      await addNotification({
-        deviceId: selectedRequest.deviceId,
-        title: 'تمت الموافقة على طلبك 🎉',
-        message: `تم قبول طلب إضافة متجر "${selectedRequest.storeName}" وإضافته إلى التطبيق`,
-        type: 'store_request_approved',
-        relatedId: selectedRequest.id,
-      });
-
       toast.success('تمت الموافقة على الطلب وإنشاء المتجر');
       setApproveDialogOpen(false);
       setSelectedRequest(null);
@@ -169,17 +159,6 @@ export default function AdminStoreRequests() {
         rejectReason.trim(),
         user.email
       );
-
-      // Send notification to user
-      await addNotification({
-        deviceId: selectedRequest.deviceId,
-        title: 'تم رفض طلب المتجر',
-        message: rejectReason.trim()
-          ? `تم رفض طلب إضافة متجر "${selectedRequest.storeName}". السبب: ${rejectReason.trim()}`
-          : `تم رفض طلب إضافة متجر "${selectedRequest.storeName}"`,
-        type: 'store_request_rejected',
-        relatedId: selectedRequest.id,
-      });
 
       toast.success('تم رفض الطلب');
       setRejectDialogOpen(false);
@@ -374,7 +353,7 @@ export default function AdminStoreRequests() {
             <DialogHeader>
               <DialogTitle>الموافقة على الطلب وإنشاء المتجر</DialogTitle>
               <DialogDescription>
-                سيتم إنشاء متجر جديد تلقائياً وإرسال إشعار للمستخدم
+                سيتم إنشاء متجر جديد تلقائياً
               </DialogDescription>
             </DialogHeader>
 
@@ -497,7 +476,7 @@ export default function AdminStoreRequests() {
             <AlertDialogHeader>
               <AlertDialogTitle>رفض طلب المتجر</AlertDialogTitle>
               <AlertDialogDescription>
-                سيتم إرسال إشعار للمستخدم بالرفض. يمكنك إضافة سبب الرفض (اختياري).
+                يمكنك إضافة سبب الرفض (اختياري) للمراجعة المستقبلية.
               </AlertDialogDescription>
             </AlertDialogHeader>
 

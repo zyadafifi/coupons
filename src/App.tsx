@@ -12,7 +12,6 @@ import { isAdminEnabled } from "@/config/env";
 import Home from "./pages/Home";
 import CouponDetail from "./pages/CouponDetail";
 import Favorites from "./pages/Favorites";
-import Notifications from "./pages/Notifications";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -157,14 +156,6 @@ const App = () => {
                     element={
                       <AppLayout>
                         <Favorites />
-                      </AppLayout>
-                    }
-                  />
-                  <Route
-                    path="/notifications"
-                    element={
-                      <AppLayout>
-                        <Notifications />
                       </AppLayout>
                     }
                   />
