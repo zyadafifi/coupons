@@ -7,8 +7,6 @@ import {
   Lightbulb,
   Loader2,
   AlertCircle,
-  Check,
-  Copy,
 } from "lucide-react";
 import { sanitizeRichText } from "@/security/sanitizeHtml";
 import { getCouponByIdForUser } from "@/hooks/useAppData";
@@ -240,10 +238,10 @@ export default function CouponDetail() {
           }}
         >
           <ProgressiveImage
-            src={coupon.image}
+            src="/assets/banner.webp"
             alt={coupon.title}
             className="w-full h-full"
-            objectPosition="center center"
+            objectPosition="center 25%"
           />
         </div>
 
@@ -289,24 +287,6 @@ export default function CouponDetail() {
           </div>
         </div>
 
-        {/* Centered Store Logo */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          {storeLogoUrl ? (
-            <img
-              src={storeLogoUrl}
-              alt={store?.name || ""}
-              className="w-28 h-28 rounded-2xl object-contain bg-card/90 p-3 shadow-2xl"
-            />
-          ) : (
-            <div
-              className="w-28 h-28 rounded-2xl flex items-center justify-center text-5xl bg-card/90 shadow-2xl"
-              style={{ color: storeColor }}
-            >
-              {storeLogo}
-            </div>
-          )}
-        </div>
-
         {/* قسيمة Logo at bottom of hero */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center">
           <span className="text-card text-sm font-medium">قسيمة</span>
@@ -314,10 +294,30 @@ export default function CouponDetail() {
       </div>
 
       {/* Curved Content Section */}
-      <div className="flex-1 -mt-6 rounded-t-[32px] bg-background relative z-10 pt-6 px-5 pb-28">
+      <div className="flex-1 -mt-6 rounded-t-[32px] bg-card relative z-10 pt-16 sm:pt-20 lg:pt-24 px-5 pb-28">
+        {/* Store Logo Badge - Circular badge overlapping top edge of white card */}
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-30">
+          <div className="bg-white rounded-full ring-1 ring-black/10 shadow-2xl w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 flex items-center justify-center overflow-hidden">
+            {storeLogoUrl ? (
+              <img
+                src={storeLogoUrl}
+                alt={store?.name || ""}
+                className="w-20 sm:w-24 lg:w-28 h-auto object-contain"
+              />
+            ) : (
+              <div
+                className="text-5xl sm:text-6xl flex items-center justify-center"
+                style={{ color: storeColor }}
+              >
+                {storeLogo}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Title */}
-        <div className="text-center mb-4">
-          <h2 className="font-bold text-lg text-foreground">
+        <div className="text-center mb-4 mt-2">
+          <h2 className="font-bold text-xl sm:text-2xl text-foreground">
             {couponsCopy.detail.title}
           </h2>
         </div>
@@ -354,7 +354,7 @@ export default function CouponDetail() {
         </div>
 
         {/* Help/Tip Section */}
-        <div className="bg-muted/50 rounded-2xl p-4 mb-6">
+        <div className="rounded-2xl p-4 mb-6">
           <div className="flex items-start gap-2 text-sm mb-2">
             <Lightbulb className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
             <div className="flex-1">
@@ -473,6 +473,18 @@ export default function CouponDetail() {
                             }}
                             usageCount={coupon.usageCount}
                             isPopular={coupon.isPopular}
+                            onCopyAndShop={handleCopyAndShop}
+                            onCopyOnly={() =>
+                              handleCopyCode(variant.code, variant.id)
+                            }
+                            onReportIssue={() => {
+                              toast({
+                                title: "شكرًا لك",
+                                description: "تم إرسال البلاغ بنجاح",
+                              });
+                            }}
+                            linkUrl={variant.linkUrl || coupon.linkUrl}
+                            copied={copiedVariantId === variant.id}
                           />
                         </div>
                       ))
@@ -493,6 +505,18 @@ export default function CouponDetail() {
                           isSelected={true}
                           usageCount={coupon.usageCount}
                           isPopular={coupon.isPopular}
+                          onCopyAndShop={handleCopyAndShop}
+                          onCopyOnly={() =>
+                            handleCopyCode(coupon.code, coupon.id)
+                          }
+                          onReportIssue={() => {
+                            toast({
+                              title: "شكرًا لك",
+                              description: "تم إرسال البلاغ بنجاح",
+                            });
+                          }}
+                          linkUrl={coupon.linkUrl}
+                          copied={copiedVariantId === coupon.id}
                         />
                       </div>
                     )}
@@ -502,105 +526,6 @@ export default function CouponDetail() {
             </>
           );
         })()}
-      </div>
-
-      {/* Urgency Line */}
-      {coupon.expiryDate && (
-        <div className="text-center mb-4">
-          <p className="text-xs text-muted-foreground">
-            {couponsCopy.detail.urgency}
-          </p>
-        </div>
-      )}
-
-      {/* Sticky Bottom Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-3 pb-safe z-20">
-        <div className="space-y-2">
-          {/* Primary Button - Copy and Shop */}
-          {selectedVariant?.linkUrl || coupon.linkUrl ? (
-            <>
-              <button
-                onClick={handleCopyAndShop}
-                className={cn(
-                  "w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 relative overflow-hidden shadow-lg hover:brightness-110 hover:contrast-105"
-                )}
-                style={{
-                  backgroundImage: "url('/assets/high-lights2.png')",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  backgroundRepeat: "no-repeat",
-                }}
-              >
-                {/* FIRST LETTER – NO BACKGROUND, JUST TEXT */}
-                {!copiedVariantId && currentCode && (
-                  <span
-                    className="absolute select-none pointer-events-none"
-                    style={{
-                      left: "3px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      fontSize: "24px",
-                      fontWeight: 900,
-                      mixBlendMode: "multiply",
-                    }}
-                  >
-                    {currentCode.charAt(0).toUpperCase()}
-                  </span>
-                )}
-
-                {/* Button content */}
-                <div
-                  className="relative z-10 flex items-center justify-center gap-2 text-primary-foreground"
-                  style={{
-                    paddingLeft: currentCode && !copiedVariantId ? "18px" : "0",
-                  }}
-                >
-                  <span>{couponsCopy.detail.copyAndShopNow}</span>
-                </div>
-              </button>
-              <p className="text-xs text-center text-muted-foreground">
-                {couponsCopy.detail.externalHint}
-              </p>
-            </>
-          ) : null}
-
-          {/* Secondary Button - Copy Only */}
-          <button
-            onClick={() =>
-              handleCopyCode(currentCode, selectedVariantId || coupon.id)
-            }
-            className={cn(
-              "w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 border-2 border-primary/30 text-foreground hover:bg-primary/5 active:scale-[0.98]",
-              !(selectedVariant?.linkUrl || coupon.linkUrl) && "bg-primary/10"
-            )}
-          >
-            {copiedVariantId ? (
-              <>
-                <Check className="w-4 h-4" />
-                <span>{couponsCopy.detail.copyOnly}</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                <span>{couponsCopy.detail.copyOnly}</span>
-              </>
-            )}
-          </button>
-
-          {/* Feedback Action */}
-          <button
-            onClick={() => {
-              // Placeholder - no backend logic
-              toast({
-                title: "شكرًا لك",
-                description: "تم إرسال البلاغ بنجاح",
-              });
-            }}
-            className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {couponsCopy.detail.reportIssue}
-          </button>
-        </div>
       </div>
 
       {/* Country Picker Modal */}
