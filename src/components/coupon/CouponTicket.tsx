@@ -206,10 +206,10 @@ export function CouponTicket({
           </h3>
 
           {/* Grey Divider */}
-          <div className="h-[0.25px] bg-[#c2bfbf] mb-3.5 -mx-5 sm:-mx-6"></div>
+          <div className="h-[0.25px] bg-[#c2bfbf] mb-2 -mx-5 sm:-mx-6"></div>
 
           {/* Label */}
-          <p className="text-[11px] text-gray-400 text-center mb-2.5">
+          <p className="text-[11px] text-gray-400 text-center w-[170px] mb-1">
             {couponsCopy.detail.copyOnly}
           </p>
 
@@ -223,7 +223,8 @@ export function CouponTicket({
                 px-2
                  rounded-xl
                border border-gray-200
-             shadow-[0_6px_14px_rgba(0,0,0,0.08)]
+             shadow-[0_10px_22px_rgba(0,0,0,0.14)]
+
                w-[200px]
                "
             >
@@ -245,21 +246,19 @@ export function CouponTicket({
       "
                 aria-label="Copy code"
               >
-                <Copy className="w-4.5 h-4.5 text-gray-600" />
+                <Copy className="w-4.5 h-4.5 text-gray-400" />
               </button>
               <div className="flex-1 text-center">
-                <span className="font-mono font-semibold text-base text-gray-700 tracking-wide">
+                <span className="font-mono font-thin text-base text-gray-500 tracking-wide">
                   {code}
                 </span>
               </div>
-
-              
             </div>
           </div>
 
           {/* External Link Hint */}
           {linkUrl && (
-            <p className="text-xs text-gray-400 text-center">
+            <p className="text-xs text-gray-400 text-right mr-2 mb-1 mt-1">
               {couponsCopy.detail.externalHint}
             </p>
           )}
@@ -278,7 +277,7 @@ export function CouponTicket({
               style={{
                 backgroundImage: "url('/assets/high-lights2.png')",
                 backgroundSize: "cover",
-                backgroundPosition: "center",
+                
                 backgroundRepeat: "no-repeat",
               }}
             >
@@ -287,12 +286,11 @@ export function CouponTicket({
                 <div
                   className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center select-none pointer-events-none"
                   style={{
-                    background:
-                      "linear-gradient(135deg, #FF8C00 0%, #FFA726 100%)",
+                    
                     clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)",
                   }}
                 >
-                  <span className="text-white text-[26px] font-black -mr-1">
+                  <span className="text-black text-[22px] font-thin  mr-8">
                     {code.charAt(0).toUpperCase()}
                   </span>
                 </div>
