@@ -168,10 +168,20 @@ export interface FirestoreStoreRequest {
   notes?: string;
   countryId: string;
   deviceId: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   createdAt: any; // Firestore Timestamp
   reviewedAt?: any; // Firestore Timestamp
   reviewedBy?: string;
   adminReply?: string;
   storeId?: string; // Created store ID if approved
+}
+
+// Coupon Issue Report
+export interface FirestoreReport {
+  id: string;
+  couponId: string;
+  variantId?: string;
+  code: string;
+  createdAt: any; // Firestore Timestamp
+  isResolved?: boolean;
 }

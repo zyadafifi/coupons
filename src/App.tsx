@@ -29,6 +29,7 @@ import AdminStores from "./pages/admin/AdminStores";
 import AdminStoreRequests from "./pages/admin/AdminStoreRequests";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminLeads from "./pages/admin/AdminLeads";
+import AdminReports from "./pages/admin/AdminReports";
 import AdminSettings from "./pages/admin/AdminSettings";
 
 // Component to redirect admin routes to home when admin is disabled
@@ -110,6 +111,14 @@ const App = () => {
                         element={
                           <AdminProtectedRoute>
                             <AdminLeads />
+                          </AdminProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/reports"
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminReports />
                           </AdminProtectedRoute>
                         }
                       />

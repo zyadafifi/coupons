@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Globe, Tags, Store, Ticket, LogOut, LayoutDashboard, Users, Settings } from 'lucide-react';
+import { Globe, Tags, Store, Ticket, LogOut, LayoutDashboard, Users, Settings, AlertCircle } from 'lucide-react';
 
 export default function AdminDashboard() {
   const { user, logout } = useAdminAuth();
@@ -42,6 +42,13 @@ export default function AdminDashboard() {
       icon: Users,
       href: '/admin/leads',
       color: 'bg-pink-500',
+    },
+    {
+      title: 'تقارير الكوبونات',
+      description: 'عرض البلاغات عن الكوبونات غير العاملة',
+      icon: AlertCircle,
+      href: '/admin/reports',
+      color: 'bg-red-500',
     },
     {
       title: 'الإعدادات',

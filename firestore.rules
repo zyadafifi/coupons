@@ -33,6 +33,14 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // REPORTS (Coupon Issue Reports)
+    match /reports/{reportId} {
+      allow create: if true
+        && request.resource.data.couponId is string
+        && request.resource.data.code is string;
+      allow read, update, delete: if isAdmin();
+    }
+
     // PUBLIC READ DATA + ADMIN WRITE
     match /coupons/{couponId} {
       allow read: if true;

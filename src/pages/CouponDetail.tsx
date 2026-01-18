@@ -20,6 +20,7 @@ import { CountrySelector } from "@/components/home/CountrySelector";
 import { CountryPickerModal } from "@/components/home/CountryPickerModal";
 import { CouponTicket } from "@/components/coupon/CouponTicket";
 import { couponsCopy } from "@/content/couponsCopy.ar";
+import { addReportIssue } from "@/hooks/useReports";
 
 export default function CouponDetail() {
   const { id } = useParams<{ id: string }>();
@@ -165,6 +166,26 @@ export default function CouponDetail() {
     handleCopyCode,
     openExternalUrl,
   ]);
+
+  const handleReportIssue = useCallback(
+    async (code: string, couponId: string, variantId?: string) => {
+      try {
+        await addReportIssue(couponId, code, variantId);
+        toast({
+          title: "شكرًا لك",
+          description: "تم إرسال البلاغ بنجاح",
+        });
+      } catch (error) {
+        console.error("Error reporting issue:", error);
+        toast({
+          title: "حدث خطأ",
+          description: "فشل إرسال البلاغ. يرجى المحاولة مرة أخرى",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast]
+  );
 
   const handleShare = async () => {
     if (coupon && navigator.share) {
@@ -478,10 +499,11 @@ export default function CouponDetail() {
                               handleCopyCode(variant.code, variant.id)
                             }
                             onReportIssue={() => {
-                              toast({
-                                title: "شكرًا لك",
-                                description: "تم إرسال البلاغ بنجاح",
-                              });
+                              handleReportIssue(
+                                variant.code,
+                                coupon.id,
+                                variant.id
+                              );
                             }}
                             linkUrl={variant.linkUrl || coupon.linkUrl}
                             copied={copiedVariantId === variant.id}
@@ -510,10 +532,7 @@ export default function CouponDetail() {
                             handleCopyCode(coupon.code, coupon.id)
                           }
                           onReportIssue={() => {
-                            toast({
-                              title: "شكرًا لك",
-                              description: "تم إرسال البلاغ بنجاح",
-                            });
+                            handleReportIssue(coupon.code, coupon.id);
                           }}
                           linkUrl={coupon.linkUrl}
                           copied={copiedVariantId === coupon.id}

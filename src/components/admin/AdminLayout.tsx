@@ -11,7 +11,8 @@ import {
   LogOut,
   Settings,
   ChevronRight,
-  PackagePlus
+  PackagePlus,
+  AlertCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: '/admin/stores', label: 'المتاجر', icon: Store },
     { href: '/admin/store-requests', label: 'طلبات المتاجر', icon: PackagePlus },
     { href: '/admin/coupons', label: 'الكوبونات', icon: Ticket },
+    { href: '/admin/reports', label: 'التقارير', icon: AlertCircle },
     { href: '/admin/settings', label: 'الإعدادات', icon: Settings },
   ];
 
