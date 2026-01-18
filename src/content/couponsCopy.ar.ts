@@ -94,7 +94,7 @@ export const couponsCopy = {
     copyOnly: "نسخ الكود فقط",
     externalHint: "سيتم فتح المتجر في نافذة خارجية",
     urgency: "⏳ العرض لفترة محدودة",
-    reportIssue: "❗ الكود لا يعمل؟ بلّغنا",
+    reportIssue: "الكود لا يعمل؟ بلّغنا",
     termsPreview: "الحد الأدنى للطلب – منتجات مختارة – غير قابل للجمع",
   },
 

@@ -95,15 +95,15 @@ export function CouponTicket({
         >
           {/* Large Discount Percentage Background Text */}
           {discountPercentage && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[100px] sm:text-[120px] font-black text-white/25 select-none pointer-events-none leading-none">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 text-[90px] sm:text-[120px]  text-white/25 select-none pointer-events-none leading-none font-thin">
               {discountPercentage}
             </div>
           )}
 
           {/* Left side: Arabic description text positioned near faded numbers */}
-          <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 max-w-[100px]">
+          <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-10 max-w-[100px] ml-8">
             <div className="flex flex-col leading-tight">
-              <span className="text-md sm:text-base font-bold text-black">
+              <span className="text-md sm:text-base font-bold text-black ">
                 {ticketText.split(" ").slice(0, 2).join(" ")}
               </span>
               {ticketText.split(" ").slice(2).length > 0 && (
@@ -258,7 +258,7 @@ export function CouponTicket({
 
           {/* External Link Hint */}
           {linkUrl && (
-            <p className="text-xs text-gray-400 text-right mr-2 mb-1 mt-1">
+            <p className="text-xs text-[11px] text-gray-400 text-right mr-2 mb-1 mt-1">
               {couponsCopy.detail.externalHint}
             </p>
           )}
@@ -276,8 +276,8 @@ export function CouponTicket({
               className="w-full relative mb-2.5 py-3.5 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 overflow-hidden shadow-md hover:brightness-110 hover:contrast-105 active:scale-[0.98]"
               style={{
                 backgroundImage: "url('/assets/high-lights2.png')",
-                backgroundSize: "cover",
-                
+                backgroundSize: "150%",
+
                 backgroundRepeat: "no-repeat",
               }}
             >
@@ -286,11 +286,10 @@ export function CouponTicket({
                 <div
                   className="absolute left-0 top-0 bottom-0 w-14 flex items-center justify-center select-none pointer-events-none"
                   style={{
-                    
                     clipPath: "polygon(0 0, 100% 0, 82% 100%, 0 100%)",
                   }}
                 >
-                  <span className="text-black text-[22px] font-thin  mr-8">
+                  <span className="text-black text-[22px] font-thin  mr-4">
                     {code.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -309,15 +308,31 @@ export function CouponTicket({
           )}
 
           {/* Report Issue Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onReportIssue?.();
-            }}
-            className="w-full py-2 text-[13px] font-semibold text-red-500 hover:text-red-600 transition-colors"
-          >
-            {couponsCopy.detail.reportIssue}
-          </button>
+          <div className="flex justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onReportIssue?.();
+              }}
+              className="
+                m-2
+                bg-white
+                border border-red-200
+                rounded-xl
+                py-2
+                px-4
+                max-w-[50%]
+                w-full
+                text-[12px] sm:text-[13px]
+                font-semibold
+                text-red-400
+                transition-colors
+                shadow-[0_0_14px_rgba(239,68,68,0.2)]
+              "
+            >
+              {couponsCopy.detail.reportIssue}
+            </button>
+          </div>
         </div>
       </div>
     </div>
