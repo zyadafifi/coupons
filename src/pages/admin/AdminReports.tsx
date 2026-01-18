@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, AlertCircle, X } from 'lucide-react';
+import { Search, AlertCircle, X, Trash2 } from 'lucide-react';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useReports, formatReportDate } from '@/hooks/useReports';
+import { useReports, formatReportDate, deleteReport } from '@/hooks/useReports';
+import { toast } from 'sonner';
 
 export default function AdminReports() {
   const { reports, loading, error } = useReports();
@@ -27,12 +28,26 @@ export default function AdminReports() {
       const matchesSearch = 
         !searchQuery ||
         report.code.toLowerCase().includes(searchLower) ||
-        report.couponId.toLowerCase().includes(searchLower) ||
-        (report.variantId && report.variantId.toLowerCase().includes(searchLower));
+        report.couponId.toLowerCase().includes(searchLower);
 
       return matchesSearch;
     });
   }, [reports, searchQuery]);
+
+  // Handle delete report
+  const handleDelete = async (reportId: string, code: string) => {
+    if (!window.confirm(`هل أنت متأكد من حذف البلاغ عن الكود "${code}"؟`)) {
+      return;
+    }
+
+    try {
+      await deleteReport(reportId);
+      toast.success('تم حذف البلاغ بنجاح');
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      toast.error('فشل حذف البلاغ. يرجى المحاولة مرة أخرى');
+    }
+  };
 
   const clearFilters = () => {
     setSearchQuery('');
@@ -114,8 +129,8 @@ export default function AdminReports() {
               <TableRow>
                 <TableHead className="text-right">الكود</TableHead>
                 <TableHead className="text-right">معرف الكوبون</TableHead>
-                <TableHead className="text-right">معرف المتغير</TableHead>
                 <TableHead className="text-right">تاريخ البلاغ</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,8 +139,8 @@ export default function AdminReports() {
                   <TableRow key={i}>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                   </TableRow>
                 ))
               ) : filteredReports.length === 0 ? (
@@ -143,11 +158,18 @@ export default function AdminReports() {
                     <TableCell className="font-mono text-sm text-muted-foreground">
                       {report.couponId}
                     </TableCell>
-                    <TableCell className="font-mono text-sm text-muted-foreground">
-                      {report.variantId || '-'}
-                    </TableCell>
                     <TableCell className="text-muted-foreground text-sm">
                       {formatReportDate(report.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(report.id, report.code)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))

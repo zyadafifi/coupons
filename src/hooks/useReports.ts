@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import {
   collection,
   addDoc,
+  doc,
+  deleteDoc,
   query,
   orderBy,
   onSnapshot,
@@ -59,6 +61,11 @@ export async function addReportIssue(
     isResolved: false,
   });
   return docRef.id;
+}
+
+// Delete a report
+export async function deleteReport(reportId: string): Promise<void> {
+  await deleteDoc(doc(db, 'reports', reportId));
 }
 
 // Format timestamp for display
