@@ -7,6 +7,7 @@ import { useCoupons, useStores, useCategories, useCountries, useCouponEvents } f
 import { useReports } from '@/hooks/useReports';
 import { CompactCouponStats } from '@/components/admin/CompactCouponStats';
 import { CouponStatsPanel } from '@/components/admin/CouponStatsPanel';
+import { CouponUsageTable } from '@/components/admin/CouponUsageTable';
 
 export default function AdminStatistics() {
   // Search and filter state
@@ -205,6 +206,14 @@ export default function AdminStatistics() {
             />
           </div>
         </div>
+
+        {/* Coupon Usage Details Table */}
+        <CouponUsageTable
+          coupons={filteredCoupons}
+          stores={stores}
+          events={events}
+          loading={loading}
+        />
       </div>
     </AdminLayout>
   );
