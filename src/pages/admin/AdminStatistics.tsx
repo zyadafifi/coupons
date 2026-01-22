@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter } from 'lucide-react';
 import { useCoupons, useStores, useCategories, useCountries, useCouponEvents } from '@/hooks/useFirestore';
+import { useReports } from '@/hooks/useReports';
 import { CompactCouponStats } from '@/components/admin/CompactCouponStats';
-import { CouponUsageTable } from '@/components/admin/CouponUsageTable';
+import { CouponUsageByStoreAccordion } from '@/components/admin/CouponUsageByStoreAccordion';
 
 export default function AdminStatistics() {
   // Search and filter state
@@ -20,6 +21,7 @@ export default function AdminStatistics() {
   const { data: stores, loading: storesLoading } = useStores();
   const { data: categories, loading: categoriesLoading } = useCategories();
   const { data: countries, loading: countriesLoading } = useCountries();
+  const { reports, loading: reportsLoading } = useReports();
 
   // Calculate date range for events
   const eventDateRange = useMemo(() => {
@@ -62,7 +64,7 @@ export default function AdminStatistics() {
     });
   }, [allCoupons, selectedStoreId, selectedCountryId, selectedCategoryId]);
 
-  const loading = couponsLoading || storesLoading || categoriesLoading || countriesLoading || eventsLoading;
+  const loading = couponsLoading || storesLoading || categoriesLoading || countriesLoading || eventsLoading || reportsLoading;
 
   return (
     <AdminLayout title="الإحصائيات">
@@ -145,27 +147,28 @@ export default function AdminStatistics() {
           </div>
         </div>
 
-        {/* Summary card + Usage table */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="lg:col-span-1">
-            <CompactCouponStats
-              coupons={couponsForCatalog}
-              events={events}
-              loading={loading}
-              storeName={selectedStoreId !== 'all' ? stores.find(s => s.id === selectedStoreId)?.nameAr : undefined}
-            />
-          </div>
-          <div className="lg:col-span-1">
-            <CouponUsageTable
-              coupons={couponsForCatalog}
-              events={events}
-              stores={stores}
-              categories={categories}
-              countries={countries}
-              searchQuery={searchQuery}
-              loading={loading}
-            />
-          </div>
+        {/* Summary card */}
+        <div>
+          <CompactCouponStats
+            coupons={couponsForCatalog}
+            events={events}
+            loading={loading}
+            storeName={selectedStoreId !== 'all' ? stores.find(s => s.id === selectedStoreId)?.nameAr : undefined}
+          />
+        </div>
+
+        {/* Store accordion (main view) */}
+        <div>
+          <CouponUsageByStoreAccordion
+            coupons={couponsForCatalog}
+            events={events}
+            reports={reports}
+            stores={stores}
+            categories={categories}
+            countries={countries}
+            searchQuery={searchQuery}
+            loading={loading}
+          />
         </div>
       </div>
     </AdminLayout>
