@@ -4,9 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter } from 'lucide-react';
 import { useCoupons, useStores, useCategories, useCountries, useCouponEvents } from '@/hooks/useFirestore';
-import { useReports } from '@/hooks/useReports';
 import { CompactCouponStats } from '@/components/admin/CompactCouponStats';
-import { CouponStatsPanel } from '@/components/admin/CouponStatsPanel';
+import { CouponUsageTable } from '@/components/admin/CouponUsageTable';
 
 export default function AdminStatistics() {
   // Search and filter state
@@ -21,7 +20,6 @@ export default function AdminStatistics() {
   const { data: stores, loading: storesLoading } = useStores();
   const { data: categories, loading: categoriesLoading } = useCategories();
   const { data: countries, loading: countriesLoading } = useCountries();
-  const { reports, loading: reportsLoading } = useReports();
 
   // Calculate date range for events
   const eventDateRange = useMemo(() => {
@@ -54,47 +52,17 @@ export default function AdminStatistics() {
     categoryId: selectedCategoryId !== 'all' ? selectedCategoryId : undefined,
   });
 
-  // Filter and search coupons
-  const filteredCoupons = useMemo(() => {
+  // Catalog: filter by store/country/category only (no search). Used for summary + usage table.
+  const couponsForCatalog = useMemo(() => {
     return allCoupons.filter((coupon) => {
-      // Store filter
       if (selectedStoreId !== 'all' && coupon.storeId !== selectedStoreId) return false;
-      
-      // Country filter
       if (selectedCountryId !== 'all' && coupon.countryId !== selectedCountryId) return false;
-      
-      // Category filter
       if (selectedCategoryId !== 'all' && coupon.categoryId !== selectedCategoryId) return false;
-      
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const store = stores.find((s) => s.id === coupon.storeId);
-        const storeName = (store?.nameAr || store?.nameEn || '').toLowerCase();
-        const titleAr = (coupon.titleAr || '').toLowerCase();
-        const titleEn = (coupon.titleEn || '').toLowerCase();
-        const code = (coupon.code || '').toLowerCase();
-        
-        const matchesSearch = 
-          storeName.includes(query) ||
-          titleAr.includes(query) ||
-          titleEn.includes(query) ||
-          code.includes(query);
-        
-        if (!matchesSearch) return false;
-      }
-      
       return true;
     });
-  }, [allCoupons, selectedStoreId, selectedCountryId, selectedCategoryId, searchQuery, stores]);
+  }, [allCoupons, selectedStoreId, selectedCountryId, selectedCategoryId]);
 
-  // Filter reports based on filtered coupons
-  const filteredReports = useMemo(() => {
-    const couponIds = new Set(filteredCoupons.map((c) => c.id));
-    return reports.filter((r) => couponIds.has(r.couponId));
-  }, [reports, filteredCoupons]);
-
-  const loading = couponsLoading || storesLoading || categoriesLoading || countriesLoading || eventsLoading || reportsLoading;
+  const loading = couponsLoading || storesLoading || categoriesLoading || countriesLoading || eventsLoading;
 
   return (
     <AdminLayout title="الإحصائيات">
@@ -177,31 +145,25 @@ export default function AdminStatistics() {
           </div>
         </div>
 
-        {/* Statistics Display */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Compact Stats (like Noon screenshot) */}
+        {/* Summary card + Usage table */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="lg:col-span-1">
             <CompactCouponStats
-              coupons={filteredCoupons}
+              coupons={couponsForCatalog}
               events={events}
               loading={loading}
               storeName={selectedStoreId !== 'all' ? stores.find(s => s.id === selectedStoreId)?.nameAr : undefined}
             />
           </div>
-
-          {/* Detailed Stats */}
-          <div className="lg:col-span-2">
-            <CouponStatsPanel
-              coupons={filteredCoupons}
+          <div className="lg:col-span-1">
+            <CouponUsageTable
+              coupons={couponsForCatalog}
+              events={events}
               stores={stores}
               categories={categories}
               countries={countries}
-              events={events}
-              reports={filteredReports}
+              searchQuery={searchQuery}
               loading={loading}
-              storeId={selectedStoreId !== 'all' ? selectedStoreId : undefined}
-              countryId={selectedCountryId !== 'all' ? selectedCountryId : undefined}
-              categoryId={selectedCategoryId !== 'all' ? selectedCategoryId : undefined}
             />
           </div>
         </div>

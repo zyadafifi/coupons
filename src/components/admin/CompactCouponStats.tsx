@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FirestoreCoupon, FirestoreCouponEvent } from '@/data/types';
-import { getBestDiscount, calculateAverageDiscount } from '@/utils/couponHelpers';
+import { getBestDiscount } from '@/utils/couponHelpers';
 
 interface CompactCouponStatsProps {
   coupons: FirestoreCoupon[];
@@ -17,15 +17,14 @@ interface StatRowProps {
   highlight?: boolean;
 }
 
+/** RTL: label right, value left */
 function StatRow({ label, value, highlight }: StatRowProps) {
   return (
-    <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
-      <div className="flex items-center gap-2">
-        <span className={`font-bold text-lg ${highlight ? 'text-primary' : 'text-foreground'}`}>
-          {value}
-        </span>
-      </div>
+    <div className="flex items-center justify-between py-2 border-b border-border last:border-0 gap-3">
       <span className="text-sm text-muted-foreground">{label}</span>
+      <span className={`font-medium text-base tabular-nums ${highlight ? 'text-primary' : 'text-foreground'}`}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -52,19 +51,15 @@ export function CompactCouponStats({
 
     // Best discount
     const allDiscounts = coupons.map((c) => getBestDiscount(c.discountLabel, c.variants));
-    const bestDiscount = allDiscounts.length > 0 
+    const bestDiscount = allDiscounts.length > 0
       ? Math.max(...allDiscounts.filter((d): d is number => d !== null))
       : 0;
-
-    // Average discount
-    const avgDiscount = calculateAverageDiscount(allDiscounts);
 
     return {
       codesUsedToday: usageEvents.length,
       totalOffers,
       totalCodes,
       bestDiscount,
-      avgDiscount,
     };
   }, [coupons, events, loading]);
 
@@ -76,11 +71,11 @@ export function CompactCouponStats({
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">{title}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="pt-0">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between py-2.5">
-              <Skeleton className="h-5 w-14" />
-              <Skeleton className="h-4 w-28" />
+            <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-14" />
             </div>
           ))}
         </CardContent>
