@@ -74,7 +74,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       {/* Header */}
       <div className="bg-background border-b">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
