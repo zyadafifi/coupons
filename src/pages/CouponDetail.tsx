@@ -21,6 +21,8 @@ import { CountryPickerModal } from "@/components/home/CountryPickerModal";
 import { CouponTicket } from "@/components/coupon/CouponTicket";
 import { couponsCopy } from "@/content/couponsCopy.ar";
 import { addReportIssue } from "@/hooks/useReports";
+import { logCouponEvent } from "@/hooks/useFirestore";
+import { getDeviceId } from "@/hooks/useLeads";
 
 export default function CouponDetail() {
   const { id } = useParams<{ id: string }>();
@@ -122,9 +124,22 @@ export default function CouponDetail() {
           description: code,
         });
         setTimeout(() => setCopiedVariantId(null), 2000);
+
+        // Log copy event
+        if (coupon) {
+          logCouponEvent({
+            couponId: coupon.id,
+            variantId: variantId !== coupon.id ? variantId : undefined,
+            storeId: coupon.storeId,
+            countryId: coupon.countryCode || coupon.countryId,
+            categoryId: coupon.categoryId,
+            deviceId: getDeviceId(),
+            eventType: 'copy',
+          });
+        }
       }
     },
-    [toast]
+    [toast, coupon]
   );
 
   // Helper to open external URL
@@ -153,6 +168,19 @@ export default function CouponDetail() {
     // Copy code if not already copied
     if (currentCode && !copiedVariantId) {
       await handleCopyCode(currentCode, selectedVariantId || coupon?.id || "");
+    }
+
+    // Log copy_and_shop event
+    if (coupon) {
+      logCouponEvent({
+        couponId: coupon.id,
+        variantId: selectedVariantId !== coupon.id ? selectedVariantId : undefined,
+        storeId: coupon.storeId,
+        countryId: coupon.countryCode || coupon.countryId,
+        categoryId: coupon.categoryId,
+        deviceId: getDeviceId(),
+        eventType: 'copy_and_shop',
+      });
     }
 
     // Open store URL

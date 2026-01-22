@@ -3,17 +3,30 @@ import { Copy, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { couponsCopy } from "@/content/couponsCopy.ar";
+import { logCouponEvent } from "@/hooks/useFirestore";
+import { getDeviceId } from "@/hooks/useLeads";
 
 interface CouponCodeBoxProps {
   code: string;
   discount?: string;
   onCopyAndShop?: () => void;
+  // Optional event logging data
+  couponId?: string;
+  variantId?: string;
+  storeId?: string;
+  countryId?: string;
+  categoryId?: string;
 }
 
 export function CouponCodeBox({
   code,
   discount,
   onCopyAndShop,
+  couponId,
+  variantId,
+  storeId,
+  countryId,
+  categoryId,
 }: CouponCodeBoxProps) {
   const [copied, setCopied] = useState(false);
 
@@ -26,6 +39,19 @@ export function CouponCodeBox({
         description: code,
       });
       setTimeout(() => setCopied(false), 2000);
+
+      // Log copy event
+      if (couponId) {
+        logCouponEvent({
+          couponId,
+          variantId,
+          storeId,
+          countryId,
+          categoryId,
+          deviceId: getDeviceId(),
+          eventType: 'copy',
+        });
+      }
     } catch (err) {
       toast({
         title: couponsCopy.modal.copyFailed,
@@ -39,6 +65,20 @@ export function CouponCodeBox({
     if (!copied) {
       await handleCopy();
     }
+
+    // Log copy_and_shop event
+    if (couponId) {
+      logCouponEvent({
+        couponId,
+        variantId,
+        storeId,
+        countryId,
+        categoryId,
+        deviceId: getDeviceId(),
+        eventType: 'copy_and_shop',
+      });
+    }
+
     onCopyAndShop?.();
   };
 

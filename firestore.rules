@@ -41,6 +41,17 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // COUPON EVENTS (Usage Tracking)
+    match /coupon_events/{eventId} {
+      allow create: if true
+        && request.resource.data.couponId is string
+        && request.resource.data.deviceId is string
+        && request.resource.data.eventType is string
+        && request.resource.data.eventType in ['copy', 'copy_and_shop', 'open_store', 'view']
+        && request.resource.data.createdAt is timestamp;
+      allow read, update, delete: if isAdmin();
+    }
+
     // PUBLIC READ DATA + ADMIN WRITE
     match /coupons/{couponId} {
       allow read: if true;

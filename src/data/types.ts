@@ -185,3 +185,16 @@ export interface FirestoreReport {
   createdAt: any; // Firestore Timestamp
   isResolved?: boolean;
 }
+
+// Coupon Event (for tracking usage)
+export interface FirestoreCouponEvent {
+  id: string;
+  couponId: string;
+  variantId?: string;
+  storeId?: string;
+  countryId?: string;
+  categoryId?: string;
+  deviceId: string;
+  eventType: "copy" | "copy_and_shop" | "open_store" | "view";
+  createdAt: any; // Firestore Timestamp
+}

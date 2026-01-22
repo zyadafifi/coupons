@@ -20,6 +20,7 @@ import {
   FirestoreStore,
   FirestoreCoupon,
   FirestoreStoreRequest,
+  FirestoreCouponEvent,
 } from '@/data/types';
 
 // Generic hook for Firestore collection
@@ -248,5 +249,94 @@ export async function rejectStoreRequest(
     reviewedBy,
     adminReply,
   });
+}
+
+// Coupon Events (Usage Tracking)
+export function useCouponEvents(filters?: {
+  from?: Date;
+  to?: Date;
+  eventTypes?: string[];
+  storeId?: string;
+  countryId?: string;
+  categoryId?: string;
+}) {
+  const [events, setEvents] = useState<FirestoreCouponEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const constraints: QueryConstraint[] = [];
+
+    // Date range filtering
+    if (filters?.from) {
+      constraints.push(where('createdAt', '>=', Timestamp.fromDate(filters.from)));
+    }
+    if (filters?.to) {
+      constraints.push(where('createdAt', '<', Timestamp.fromDate(filters.to)));
+    }
+
+    // Event type filtering
+    if (filters?.eventTypes && filters.eventTypes.length > 0) {
+      constraints.push(where('eventType', 'in', filters.eventTypes));
+    }
+
+    // Store filtering (only if single constraint available)
+    if (filters?.storeId) {
+      constraints.push(where('storeId', '==', filters.storeId));
+    }
+
+    const q = query(collection(db, 'coupon_events'), ...constraints);
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        let items = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as FirestoreCouponEvent[];
+
+        // Client-side filtering for country and category if needed
+        // (Firestore has limitations on multiple inequality filters)
+        if (filters?.countryId) {
+          items = items.filter((e) => e.countryId === filters.countryId);
+        }
+        if (filters?.categoryId) {
+          items = items.filter((e) => e.categoryId === filters.categoryId);
+        }
+
+        setEvents(items);
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Coupon events fetch error:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [
+    filters?.from?.getTime(),
+    filters?.to?.getTime(),
+    filters?.eventTypes?.join(','),
+    filters?.storeId,
+    filters?.countryId,
+    filters?.categoryId,
+  ]);
+
+  return { events, loading, error };
+}
+
+// Log a coupon event (fire and forget, doesn't block UX)
+export async function logCouponEvent(data: Omit<FirestoreCouponEvent, 'id' | 'createdAt'>): Promise<void> {
+  try {
+    await addDoc(collection(db, 'coupon_events'), {
+      ...data,
+      createdAt: Timestamp.now(),
+    });
+  } catch (error) {
+    // Silent fail - don't block UX
+    console.error('Failed to log coupon event:', error);
+  }
 }
 
