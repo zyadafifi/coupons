@@ -330,13 +330,32 @@ export function useCouponEvents(filters?: {
 // Log a coupon event (fire and forget, doesn't block UX)
 export async function logCouponEvent(data: Omit<FirestoreCouponEvent, 'id' | 'createdAt'>): Promise<void> {
   try {
+    console.log('🔵 Logging coupon event:', {
+      couponId: data.couponId,
+      eventType: data.eventType,
+      deviceId: data.deviceId,
+    });
+    
     await addDoc(collection(db, 'coupon_events'), {
       ...data,
       createdAt: Timestamp.now(),
     });
-  } catch (error) {
-    // Silent fail - don't block UX
-    console.error('Failed to log coupon event:', error);
+    
+    console.log('✅ Coupon event logged successfully');
+  } catch (error: any) {
+    // Enhanced error logging for debugging
+    console.error('❌ Failed to log coupon event:', error);
+    console.error('Error details:', {
+      code: error?.code,
+      message: error?.message,
+      name: error?.name,
+    });
+    
+    // Check if it's a permission error
+    if (error?.code === 'permission-denied') {
+      console.error('🔒 PERMISSION DENIED: Firestore rules may not be deployed!');
+      console.error('👉 Run: firebase deploy --only firestore:rules');
+    }
   }
 }
 
