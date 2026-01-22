@@ -12,7 +12,9 @@ import {
   Settings,
   ChevronRight,
   PackagePlus,
-  AlertCircle
+  AlertCircle,
+  BarChart3,
+  Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -27,17 +29,19 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
 
   const navItems = [
     { href: '/admin', label: 'الرئيسية', icon: LayoutDashboard },
+    { href: '/admin/statistics', label: 'الإحصائيات', icon: BarChart3 },
     { href: '/admin/countries', label: 'الدول', icon: Globe },
     { href: '/admin/categories', label: 'التصنيفات', icon: Tags },
     { href: '/admin/stores', label: 'المتاجر', icon: Store },
     { href: '/admin/store-requests', label: 'طلبات المتاجر', icon: PackagePlus },
     { href: '/admin/coupons', label: 'الكوبونات', icon: Ticket },
+    { href: '/admin/leads', label: 'العملاء المحتملين', icon: Users },
     { href: '/admin/reports', label: 'التقارير', icon: AlertCircle },
     { href: '/admin/settings', label: 'الإعدادات', icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       {/* Header */}
       <div className="bg-background border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
