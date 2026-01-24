@@ -20,12 +20,15 @@ interface Banner {
 interface AppSettings {
   appName: string;
   logoUrl: string;
+  /** Banner image URL for the coupon detail page hero. */
+  detailBannerUrl?: string;
   banners: Banner[];
 }
 
 const defaultSettings: AppSettings = {
   appName: 'قسيمة',
   logoUrl: 'https://i.ibb.co/QjTHRZTj/Generated-Image-December-20-2025-8-48-AM-Photoroom.png',
+  detailBannerUrl: '',
   banners: [],
 };
 
@@ -152,6 +155,34 @@ export default function AdminSettings() {
                 />
               </div>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="detailBannerUrl">بنر صفحة تفاصيل الكوبون</Label>
+              <Input
+                id="detailBannerUrl"
+                value={settings.detailBannerUrl ?? ''}
+                onChange={(e) => setSettings({ ...settings, detailBannerUrl: e.target.value })}
+                placeholder="https://example.com/banner.jpg"
+                dir="ltr"
+              />
+              <p className="text-xs text-muted-foreground">
+                يظهر في أعلى صفحة تفاصيل الكوبون. اتركه فارغاً لاستخدام الصورة الافتراضية.
+              </p>
+            </div>
+            {settings.detailBannerUrl && (
+              <div className="mt-2">
+                <Label>معاينة البنر</Label>
+                <div className="mt-2 rounded-lg overflow-hidden bg-muted max-w-md">
+                  <img
+                    src={settings.detailBannerUrl}
+                    alt="Detail banner preview"
+                    className="w-full h-32 object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                    }}
+                  />
+                </div>
+              </div>
+            )}
             {settings.logoUrl && (
               <div className="mt-4">
                 <Label>معاينة اللوجو</Label>

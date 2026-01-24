@@ -11,6 +11,7 @@ import {
   orderBy,
   onSnapshot,
   Timestamp,
+  serverTimestamp,
   QueryConstraint,
 } from 'firebase/firestore';
 import { db } from '@/firebase';
@@ -327,16 +328,31 @@ export function useCouponEvents(filters?: {
   return { events, loading, error };
 }
 
-// Log a coupon event (fire and forget, doesn't block UX)
-export async function logCouponEvent(data: Omit<FirestoreCouponEvent, 'id' | 'createdAt'>): Promise<void> {
+/** Remove undefined values so Firestore never receives them. */
+function cleanFirestorePayload<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined)
+  ) as T;
+}
+
+/** Log a coupon event (fire and forget, doesn't block UX). Never sends undefined fields. */
+export async function logCouponEvent(
+  data: Omit<FirestoreCouponEvent, 'id' | 'createdAt'>
+): Promise<void> {
   try {
-    await addDoc(collection(db, 'coupon_events'), {
-      ...data,
-      createdAt: Timestamp.now(),
+    const payload = cleanFirestorePayload({
+      couponId: data.couponId,
+      variantId: data.variantId || undefined,
+      storeId: data.storeId ?? undefined,
+      countryId: data.countryId ?? undefined,
+      categoryId: data.categoryId ?? undefined,
+      deviceId: data.deviceId,
+      eventType: data.eventType,
+      createdAt: serverTimestamp(),
     });
+    await addDoc(collection(db, 'coupon_events'), payload);
   } catch (error) {
-    // Silent fail - don't block UX
-    console.error('Failed to log coupon event:', error);
+    console.warn('Failed to log coupon event:', error);
   }
 }
 
