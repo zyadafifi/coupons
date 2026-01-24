@@ -23,14 +23,12 @@ import { couponsCopy } from "@/content/couponsCopy.ar";
 import { addReportIssue } from "@/hooks/useReports";
 import { logCouponEvent } from "@/hooks/useFirestore";
 import { getDeviceId } from "@/hooks/useLeads";
-import { useAppSettings } from "@/hooks/useAppSettings";
 
 export default function CouponDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toggleFavorite, isFavorite } = useApp();
   const { toast } = useToast();
-  const { settings } = useAppSettings();
   const [copiedVariantId, setCopiedVariantId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -289,7 +287,7 @@ export default function CouponDetail() {
           }}
         >
           <ProgressiveImage
-            src={settings.detailBannerUrl?.trim() || "/assets/banner.webp"}
+            src="/assets/banner.webp"
             alt={coupon.title}
             className="w-full h-full"
             objectPosition="center 25%"

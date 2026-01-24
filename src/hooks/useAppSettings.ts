@@ -14,15 +14,12 @@ interface Banner {
 interface AppSettings {
   appName: string;
   logoUrl: string;
-  /** Banner image URL for the coupon detail page hero. */
-  detailBannerUrl?: string;
   banners: Banner[];
 }
 
 const defaultSettings: AppSettings = {
   appName: 'قسيمة',
   logoUrl: logoImage,
-  detailBannerUrl: '',
   banners: [],
 };
 
