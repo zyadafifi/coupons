@@ -42,8 +42,8 @@ export default function More() {
     // Validation
     if (!requestForm.storeName.trim()) {
       toast({
-        title: "خطأ",
-        description: "يرجى إدخال اسم المتجر",
+        title: "Error",
+        description: "Please enter the store name",
         variant: "destructive",
       });
       return;
@@ -51,8 +51,8 @@ export default function More() {
 
     if (!requestForm.email.trim()) {
       toast({
-        title: "خطأ",
-        description: "يرجى إدخال البريد الإلكتروني",
+        title: "Error",
+        description: "Please enter your email address",
         variant: "destructive",
       });
       return;
@@ -62,8 +62,8 @@ export default function More() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(requestForm.email.trim())) {
       toast({
-        title: "خطأ",
-        description: "يرجى إدخال بريد إلكتروني صحيح",
+        title: "Error",
+        description: "Please enter a valid email address",
         variant: "destructive",
       });
       return;
@@ -71,8 +71,8 @@ export default function More() {
 
     if (!requestForm.phone.trim()) {
       toast({
-        title: "خطأ",
-        description: "يرجى إدخال رقم الهاتف",
+        title: "Error",
+        description: "Please enter your phone number",
         variant: "destructive",
       });
       return;
@@ -81,8 +81,8 @@ export default function More() {
     const countryId = requestForm.countryId || selectedCountry;
     if (!countryId) {
       toast({
-        title: "خطأ",
-        description: "يرجى اختيار الدولة",
+        title: "Error",
+        description: "Please select a country",
         variant: "destructive",
       });
       return;
@@ -92,8 +92,8 @@ export default function More() {
     const selectedCountryData = countries.find((c) => c.id === countryId);
     if (!selectedCountryData) {
       toast({
-        title: "خطأ",
-        description: "الدولة المحددة غير صحيحة",
+        title: "Error",
+        description: "The selected country is invalid",
         variant: "destructive",
       });
       return;
@@ -106,8 +106,8 @@ export default function More() {
     
     if (!phoneCountry) {
       toast({
-        title: "خطأ",
-        description: "لا يمكن التحقق من رقم الهاتف لهذه الدولة",
+        title: "Error",
+        description: "Cannot validate phone number for this country",
         variant: "destructive",
       });
       return;
@@ -121,8 +121,8 @@ export default function More() {
 
     if (!phoneValidation.isValid) {
       toast({
-        title: "خطأ",
-        description: phoneValidation.error || "رقم الهاتف غير صحيح",
+        title: "Error",
+        description: phoneValidation.error || "Invalid phone number",
         variant: "destructive",
       });
       return;
@@ -164,8 +164,8 @@ export default function More() {
       await addStoreRequest(payload);
 
       toast({
-        title: "تم إرسال الطلب بنجاح",
-        description: "سنراجع طلبك في أقرب وقت",
+        title: "Request Submitted",
+        description: "We will review your request soon",
       });
 
       setRequestForm({
@@ -180,8 +180,8 @@ export default function More() {
     } catch (error) {
       console.error("Error submitting store request:", error);
       toast({
-        title: "حدث خطأ",
-        description: "يرجى المحاولة مرة أخرى",
+        title: "Error",
+        description: "Please try again",
         variant: "destructive",
       });
     } finally {
@@ -249,15 +249,15 @@ export default function More() {
 
       {/* Request Store Sheet */}
       <Sheet open={requestSheetOpen} onOpenChange={setRequestSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl" dir="rtl">
-          <SheetHeader className="text-right">
-            <SheetTitle>طلب إضافة متجر</SheetTitle>
+        <SheetContent side="bottom" className="rounded-t-3xl" dir="ltr">
+          <SheetHeader className="text-left">
+            <SheetTitle>Store Addition Request</SheetTitle>
           </SheetHeader>
 
           <div className="mt-4 space-y-5">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                اسم المتجر *
+                Store Name *
               </label>
               <Input
                 value={requestForm.storeName}
@@ -267,7 +267,7 @@ export default function More() {
                     storeName: e.target.value,
                   }))
                 }
-                placeholder="مثال: متجر نون"
+                placeholder="Example: Noon Store"
                 className="h-12 rounded-xl text-base"
                 disabled={isSubmitting}
               />
@@ -275,7 +275,7 @@ export default function More() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                البريد الإلكتروني *
+                Email *
               </label>
               <Input
                 type="email"
@@ -295,7 +295,7 @@ export default function More() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                رقم الهاتف *
+                Phone Number *
               </label>
               <Input
                 type="tel"
@@ -315,7 +315,7 @@ export default function More() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                الإسم
+                Name
               </label>
               <Input
                 value={requestForm.contactPersonName}
@@ -325,7 +325,7 @@ export default function More() {
                     contactPersonName: e.target.value,
                   }))
                 }
-                placeholder="مثال: أحمد محمد"
+                placeholder="Example: Ahmed Mohamed"
                 className="h-12 rounded-xl text-base"
                 disabled={isSubmitting}
               />
@@ -333,7 +333,7 @@ export default function More() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                الدولة *
+                Country *
               </label>
               <Select
                 value={requestForm.countryId || selectedCountry || ""}
@@ -343,7 +343,7 @@ export default function More() {
                 disabled={isSubmitting}
               >
                 <SelectTrigger className="h-12 rounded-xl text-base">
-                  <SelectValue placeholder="اختر الدولة" />
+                  <SelectValue placeholder="Select Country" />
                 </SelectTrigger>
                 <SelectContent>
                   {countries.map((country) => (
@@ -360,7 +360,7 @@ export default function More() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
-                رابط المتجر
+                Store Link
               </label>
               <Input
                 value={requestForm.storeUrl}
@@ -385,10 +385,10 @@ export default function More() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  جاري الإرسال...
+                  Submitting...
                 </>
               ) : (
-                "إرسال الطلب"
+                "Submit Request"
               )}
             </Button>
           </div>
