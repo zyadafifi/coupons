@@ -14,25 +14,60 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useReports, formatReportDate, deleteReport } from '@/hooks/useReports';
+import { useCoupons, useStores, useCountries } from '@/hooks/useFirestore';
 import { toast } from 'sonner';
 
 export default function AdminReports() {
-  const { reports, loading, error } = useReports();
+  const { reports, loading: reportsLoading, error } = useReports();
+  const { data: coupons = [], loading: couponsLoading } = useCoupons();
+  const { data: stores = [] } = useStores();
+  const { data: countries = [] } = useCountries();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const loading = reportsLoading || couponsLoading;
+
+  // Create maps for quick lookup
+  const couponsMap = useMemo(() => {
+    const map = new Map();
+    coupons.forEach(coupon => {
+      map.set(coupon.id, coupon);
+    });
+    return map;
+  }, [coupons]);
+
+  const storesMap = useMemo(() => {
+    const map = new Map();
+    stores.forEach(store => {
+      map.set(store.id, store);
+    });
+    return map;
+  }, [stores]);
+
+  const countriesMap = useMemo(() => {
+    const map = new Map();
+    countries.forEach(country => {
+      map.set(country.id, country);
+    });
+    return map;
+  }, [countries]);
 
   // Filter reports
   const filteredReports = useMemo(() => {
     return reports.filter(report => {
-      // Search filter by code or coupon ID
+      // Search filter by code or store name
       const searchLower = searchQuery.toLowerCase();
+      const coupon = couponsMap.get(report.couponId);
+      const store = coupon ? storesMap.get(coupon.storeId) : null;
+      const storeName = store?.nameAr || store?.nameEn || '';
+      
       const matchesSearch = 
         !searchQuery ||
         report.code.toLowerCase().includes(searchLower) ||
-        report.couponId.toLowerCase().includes(searchLower);
+        storeName.toLowerCase().includes(searchLower);
 
       return matchesSearch;
     });
-  }, [reports, searchQuery]);
+  }, [reports, searchQuery, couponsMap, storesMap]);
 
   // Handle delete report
   const handleDelete = async (reportId: string, code: string) => {
@@ -59,7 +94,7 @@ export default function AdminReports() {
     <AdminLayout title="تقارير الكوبونات">
       <div className="space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="bg-card border rounded-lg p-4">
             <p className="text-sm text-muted-foreground">إجمالي التقارير</p>
             <p className="text-2xl font-bold">{reports.length}</p>
@@ -79,12 +114,6 @@ export default function AdminReports() {
               }).length}
             </p>
           </div>
-          <div className="bg-card border rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">كوبونات فريدة</p>
-            <p className="text-2xl font-bold">
-              {new Set(reports.map(r => r.couponId)).size}
-            </p>
-          </div>
         </div>
 
         {/* Filters */}
@@ -92,7 +121,7 @@ export default function AdminReports() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="بحث بالكود أو معرف الكوبون..."
+              placeholder="بحث بالكود أو المتجر..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -128,7 +157,8 @@ export default function AdminReports() {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center">الكود</TableHead>
-                <TableHead className="text-center">معرف الكوبون</TableHead>
+                <TableHead className="text-center">المتجر</TableHead>
+                <TableHead className="text-center">الدولة</TableHead>
                 <TableHead className="text-center">تاريخ البلاغ</TableHead>
                 <TableHead className="text-center">الإجراءات</TableHead>
               </TableRow>
@@ -139,42 +169,52 @@ export default function AdminReports() {
                   <TableRow key={i}>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                   </TableRow>
                 ))
               ) : filteredReports.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     {reports.length === 0 ? 'لا توجد تقارير بعد' : 'لا توجد نتائج مطابقة'}
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredReports.map((report) => (
-                  <TableRow key={report.id}>
-                    <TableCell className="font-medium font-mono text-center">
-                      {report.code}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm text-muted-foreground text-center">
-                      {report.couponId}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm text-center">
-                      {formatReportDate(report.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(report.id, report.code)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
+                filteredReports.map((report) => {
+                  const coupon = couponsMap.get(report.couponId);
+                  const store = coupon ? storesMap.get(coupon.storeId) : null;
+                  const country = coupon ? countriesMap.get(coupon.countryId) : null;
+                  
+                  return (
+                    <TableRow key={report.id}>
+                      <TableCell className="font-medium font-mono text-center">
+                        {report.code}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {store ? (store.nameAr || store.nameEn || '—') : '—'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {country ? (country.flag || '—') : '—'}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm text-center">
+                        {formatReportDate(report.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(report.id, report.code)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
