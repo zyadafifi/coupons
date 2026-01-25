@@ -133,23 +133,6 @@ export default function Home() {
           {/* Hero Carousel */}
           <HeroCarousel />
 
-          {/* Header Section */}
-          <div className="px-4 pt-8 pb-6 text-center">
-            <div className="relative inline-block max-w-2xl mx-auto">
-              {/* Decorative background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-3xl blur-xl -z-10" />
-              
-              <div className="relative bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm rounded-2xl px-6 py-5 border border-border/50 shadow-sm">
-                <p className="text-base font-semibold text-foreground mb-2.5 leading-relaxed">
-                  {couponsCopy.home.subtitle}
-                </p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {couponsCopy.home.helperLine}
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Categories with Filter Button */}
           <div className="pt-4 pb-3">
             <div className="flex items-center gap-2 px-4">
