@@ -166,6 +166,10 @@ export interface PhoneCountry {
 export interface FirestoreStoreRequest {
   id: string;
   storeName: string;
+  email: string;
+  phone: string;
+  contactPersonName?: string;
+  storeCategory?: string;
   storeUrl?: string;
   notes?: string;
   countryId: string;

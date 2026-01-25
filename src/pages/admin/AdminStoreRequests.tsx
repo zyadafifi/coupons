@@ -41,11 +41,12 @@ import {
 import {
   useStoreRequests,
   useCountries,
+  useCategories,
   approveStoreRequest,
   rejectStoreRequest,
 } from '@/hooks/useFirestore';
 import { FirestoreStoreRequest } from '@/data/types';
-import { Check, X, Loader2, ExternalLink, Calendar, MapPin } from 'lucide-react';
+import { Check, X, Loader2, ExternalLink, Calendar, MapPin, Mail, Phone, User, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { cn } from '@/lib/utils';
@@ -57,6 +58,7 @@ export default function AdminStoreRequests() {
   const [activeTab, setActiveTab] = useState<StatusTab>('pending');
   const { data: allRequests, loading } = useStoreRequests();
   const { data: countries } = useCountries();
+  const { data: categories } = useCategories();
   
   // Dialogs
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
@@ -198,6 +200,12 @@ export default function AdminStoreRequests() {
     return country ? `${country.flag} ${country.nameAr}` : countryId;
   };
 
+  const getCategoryName = (categoryId?: string) => {
+    if (!categoryId) return '-';
+    const category = categories.find((c) => c.id === categoryId);
+    return category ? `${category.icon} ${category.nameAr}` : categoryId;
+  };
+
   const tabs: { value: StatusTab; label: string; count: number }[] = [
     { value: 'pending', label: 'قيد المراجعة', count: allRequests.filter((r) => r.status === 'pending').length },
     { value: 'approved', label: 'موافق عليها', count: allRequests.filter((r) => r.status === 'approved').length },
@@ -255,10 +263,13 @@ export default function AdminStoreRequests() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-center">اسم المتجر</TableHead>
+                  <TableHead className="text-center">البريد الإلكتروني</TableHead>
+                  <TableHead className="text-center">رقم الهاتف</TableHead>
+                  <TableHead className="text-center">اسم المسؤول</TableHead>
+                  <TableHead className="text-center">نوع المتجر</TableHead>
                   <TableHead className="text-center">الدولة</TableHead>
                   <TableHead className="text-center">رابط المتجر</TableHead>
                   <TableHead className="text-center">الملاحظات</TableHead>
-                  <TableHead className="text-center">معرف الجهاز</TableHead>
                   <TableHead className="text-center">تاريخ الإنشاء</TableHead>
                   <TableHead className="text-center">الحالة</TableHead>
                   <TableHead className="text-center">الإجراءات</TableHead>
@@ -268,6 +279,49 @@ export default function AdminStoreRequests() {
                 {requests.map((request) => (
                   <TableRow key={request.id}>
                     <TableCell className="font-medium text-center">{request.storeName}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-sm">
+                        <Mail className="w-3 h-3 text-muted-foreground" />
+                        <a
+                          href={`mailto:${request.email}`}
+                          className="text-primary hover:underline"
+                        >
+                          {request.email}
+                        </a>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-sm">
+                        <Phone className="w-3 h-3 text-muted-foreground" />
+                        <a
+                          href={`tel:${request.phone}`}
+                          className="text-primary hover:underline"
+                          dir="ltr"
+                        >
+                          {request.phone}
+                        </a>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {request.contactPersonName ? (
+                        <div className="flex items-center justify-center gap-1 text-sm">
+                          <User className="w-3 h-3 text-muted-foreground" />
+                          {request.contactPersonName}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {request.storeCategory ? (
+                        <div className="flex items-center justify-center gap-1 text-sm">
+                          <Tag className="w-3 h-3 text-muted-foreground" />
+                          {getCategoryName(request.storeCategory)}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center gap-1">
                         <MapPin className="w-3 h-3" />
@@ -295,11 +349,6 @@ export default function AdminStoreRequests() {
                       ) : (
                         <span className="text-muted-foreground text-sm">-</span>
                       )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <code className="text-xs bg-muted px-2 py-1 rounded">
-                        {request.deviceId.substring(0, 12)}...
-                      </code>
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">

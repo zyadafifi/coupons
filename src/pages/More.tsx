@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -22,6 +21,8 @@ import { useApp } from "@/contexts/AppContext";
 import { useActiveCountries } from "@/hooks/useAppData";
 import { addStoreRequest } from "@/hooks/useFirestore";
 import { getDeviceId } from "@/hooks/useLeads";
+import { parseAndValidatePhone } from "@/security/phone";
+import { phoneCountries } from "@/data/phone-countries";
 
 export default function More() {
   const { selectedCountry } = useApp();
@@ -30,8 +31,10 @@ export default function More() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [requestForm, setRequestForm] = useState({
     storeName: "",
+    email: "",
+    phone: "",
+    contactPersonName: "",
     storeUrl: "",
-    notes: "",
     countryId: "",
   });
 
@@ -41,6 +44,35 @@ export default function More() {
       toast({
         title: "خطأ",
         description: "يرجى إدخال اسم المتجر",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!requestForm.email.trim()) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال البريد الإلكتروني",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(requestForm.email.trim())) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال بريد إلكتروني صحيح",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!requestForm.phone.trim()) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال رقم الهاتف",
         variant: "destructive",
       });
       return;
@@ -56,6 +88,46 @@ export default function More() {
       return;
     }
 
+    // Get country code for phone validation
+    const selectedCountryData = countries.find((c) => c.id === countryId);
+    if (!selectedCountryData) {
+      toast({
+        title: "خطأ",
+        description: "الدولة المحددة غير صحيحة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Map country to phone country code by matching flag or name
+    const phoneCountry = phoneCountries.find(
+      (pc) => pc.flag === selectedCountryData.flag || pc.nameAr === selectedCountryData.nameAr
+    );
+    
+    if (!phoneCountry) {
+      toast({
+        title: "خطأ",
+        description: "لا يمكن التحقق من رقم الهاتف لهذه الدولة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Phone validation
+    const phoneValidation = parseAndValidatePhone(
+      requestForm.phone.trim(),
+      phoneCountry.code
+    );
+
+    if (!phoneValidation.isValid) {
+      toast({
+        title: "خطأ",
+        description: phoneValidation.error || "رقم الهاتف غير صحيح",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -64,25 +136,29 @@ export default function More() {
       // Build payload without undefined fields (Firestore doesn't allow undefined)
       const payload: {
         storeName: string;
+        email: string;
+        phone: string;
         countryId: string;
         deviceId: string;
+        contactPersonName?: string;
         storeUrl?: string;
-        notes?: string;
       } = {
         storeName: requestForm.storeName.trim(),
+        email: requestForm.email.trim().toLowerCase(),
+        phone: phoneValidation.e164 || requestForm.phone.trim(),
         countryId,
         deviceId,
       };
 
       // Only include optional fields if they have values
+      const contactPersonName = requestForm.contactPersonName.trim();
+      if (contactPersonName) {
+        payload.contactPersonName = contactPersonName;
+      }
+
       const storeUrl = requestForm.storeUrl.trim();
       if (storeUrl) {
         payload.storeUrl = storeUrl;
-      }
-
-      const notes = requestForm.notes.trim();
-      if (notes) {
-        payload.notes = notes;
       }
 
       await addStoreRequest(payload);
@@ -92,7 +168,14 @@ export default function More() {
         description: "سنراجع طلبك في أقرب وقت",
       });
 
-      setRequestForm({ storeName: "", storeUrl: "", notes: "", countryId: "" });
+      setRequestForm({
+        storeName: "",
+        email: "",
+        phone: "",
+        contactPersonName: "",
+        storeUrl: "",
+        countryId: "",
+      });
       setRequestSheetOpen(false);
     } catch (error) {
       console.error("Error submitting store request:", error);
@@ -171,9 +254,9 @@ export default function More() {
             <SheetTitle>طلب إضافة متجر</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
+          <div className="mt-4 space-y-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
                 اسم المتجر *
               </label>
               <Input
@@ -185,13 +268,71 @@ export default function More() {
                   }))
                 }
                 placeholder="مثال: متجر نون"
-                className="h-12 rounded-xl"
+                className="h-12 rounded-xl text-base"
                 disabled={isSubmitting}
               />
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
+                البريد الإلكتروني *
+              </label>
+              <Input
+                type="email"
+                value={requestForm.email}
+                onChange={(e) =>
+                  setRequestForm((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
+                placeholder="example@email.com"
+                className="h-12 rounded-xl text-base"
+                dir="ltr"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
+                رقم الهاتف *
+              </label>
+              <Input
+                type="tel"
+                value={requestForm.phone}
+                onChange={(e) =>
+                  setRequestForm((prev) => ({
+                    ...prev,
+                    phone: e.target.value,
+                  }))
+                }
+                placeholder="05XXXXXXXX"
+                className="h-12 rounded-xl text-base"
+                dir="ltr"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
+                الإسم
+              </label>
+              <Input
+                value={requestForm.contactPersonName}
+                onChange={(e) =>
+                  setRequestForm((prev) => ({
+                    ...prev,
+                    contactPersonName: e.target.value,
+                  }))
+                }
+                placeholder="مثال: أحمد محمد"
+                className="h-12 rounded-xl text-base"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
                 الدولة *
               </label>
               <Select
@@ -201,7 +342,7 @@ export default function More() {
                 }
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="h-12 rounded-xl">
+                <SelectTrigger className="h-12 rounded-xl text-base">
                   <SelectValue placeholder="اختر الدولة" />
                 </SelectTrigger>
                 <SelectContent>
@@ -217,8 +358,8 @@ export default function More() {
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground block">
                 رابط المتجر
               </label>
               <Input
@@ -230,24 +371,8 @@ export default function More() {
                   }))
                 }
                 placeholder="https://example.com"
-                className="h-12 rounded-xl"
+                className="h-12 rounded-xl text-base"
                 dir="ltr"
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                ملاحظات إضافية
-              </label>
-              <Textarea
-                value={requestForm.notes}
-                onChange={(e) =>
-                  setRequestForm((prev) => ({ ...prev, notes: e.target.value }))
-                }
-                placeholder="أي معلومات إضافية..."
-                className="rounded-xl resize-none"
-                rows={3}
                 disabled={isSubmitting}
               />
             </div>
@@ -255,7 +380,7 @@ export default function More() {
             <Button
               onClick={handleRequestSubmit}
               disabled={isSubmitting}
-              className="w-full h-12 text-base font-semibold rounded-xl"
+              className="w-full h-12 text-base font-semibold rounded-xl mt-6"
             >
               {isSubmitting ? (
                 <>
