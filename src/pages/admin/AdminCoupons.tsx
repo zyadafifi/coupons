@@ -428,7 +428,6 @@ export default function AdminCoupons() {
                   <TableHead>الخصم</TableHead>
                   <TableHead>الدولة</TableHead>
                   <TableHead>المتغيرات</TableHead>
-                  <TableHead>الاستخدام</TableHead>
                   <TableHead>الحالة</TableHead>
                   <TableHead>الإجراءات</TableHead>
                 </TableRow>
@@ -437,7 +436,7 @@ export default function AdminCoupons() {
                 {filteredCoupons.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={9}
+                      colSpan={8}
                       className="text-center text-muted-foreground py-8"
                     >
                       لا توجد كوبونات
@@ -466,7 +465,6 @@ export default function AdminCoupons() {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell>{coupon.usageCount || 0}</TableCell>
                       <TableCell>
                         <Switch
                           checked={coupon.isActive}
