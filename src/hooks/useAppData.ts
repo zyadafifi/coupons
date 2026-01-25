@@ -96,6 +96,7 @@ const ticketDescriptionAr =
     descriptionEn: fc.descriptionEn,
     discountLabel: fc.discountLabel,
     linkUrl: fc.linkUrl || store?.websiteUrl || "",
+    bannerUrl: (fc as any).bannerUrl || undefined,
     // Store display fields (pre-resolved)
     storeName: store?.nameAr || store?.nameEn || "متجر",
     storeLogoUrl: store?.logoUrl || "",

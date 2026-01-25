@@ -287,7 +287,7 @@ export default function CouponDetail() {
           }}
         >
           <ProgressiveImage
-            src="/assets/banner.webp"
+            src={coupon.bannerUrl || "/assets/banner.webp"}
             alt={coupon.title}
             className="w-full h-full"
             objectPosition="center 25%"

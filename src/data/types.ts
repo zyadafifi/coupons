@@ -63,6 +63,7 @@ export interface Coupon {
   countryId?: string;
   linkUrl?: string;
   offerButtonLabel?: string;
+  bannerUrl?: string;
   isActive?: boolean;
   updatedAt?: string;
   // Pre-resolved display fields
@@ -129,6 +130,7 @@ export interface FirestoreCoupon {
   categoryId: string;
   countryId: string;
   linkUrl: string;
+  bannerUrl?: string;
   expiryDate: any; // Firestore Timestamp
   terms: string[];
   isPopular: boolean;

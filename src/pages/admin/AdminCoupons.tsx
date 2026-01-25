@@ -87,6 +87,7 @@ export default function AdminCoupons() {
     countryId: "",
     linkUrl: "",
     offerButtonLabel: "",
+    bannerUrl: "",
     expiryDate: "",
     terms: [] as string[],
     isPopular: false,
@@ -160,6 +161,7 @@ export default function AdminCoupons() {
       countryId: "",
       linkUrl: "",
       offerButtonLabel: "",
+      bannerUrl: "",
       expiryDate: "",
       terms: [],
       isPopular: false,
@@ -194,6 +196,7 @@ export default function AdminCoupons() {
       countryId: coupon.countryId || "",
       linkUrl: coupon.linkUrl || "",
       offerButtonLabel: (coupon as any).offerButtonLabel || "",
+      bannerUrl: (coupon as any).bannerUrl || "",
       expiryDate: timestampToString(coupon.expiryDate),
       terms: cleanTerms,
       isPopular: coupon.isPopular || false,
@@ -229,6 +232,7 @@ export default function AdminCoupons() {
         countryId: formData.countryId,
         linkUrl: formData.linkUrl,
         offerButtonLabel: formData.offerButtonLabel,
+        bannerUrl: formData.bannerUrl || null,
         terms: cleanTerms,
         isPopular: formData.isPopular,
         isActive: formData.isActive,
@@ -664,6 +668,33 @@ export default function AdminCoupons() {
                   placeholder="احصل على العرض"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>رابط صورة البنر</Label>
+              <Input
+                value={formData.bannerUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, bannerUrl: e.target.value })
+                }
+                placeholder="https://example.com/banner.jpg"
+                type="url"
+              />
+              {formData.bannerUrl && (
+                <div className="mt-2 p-2 bg-muted rounded-lg">
+                  <img 
+                    src={formData.bannerUrl} 
+                    alt="معاينة البنر" 
+                    className="w-full h-32 object-cover rounded"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                سيتم استخدام هذه الصورة كخلفية في صفحة تفاصيل الكوبون. إذا لم يتم تحديد رابط، سيتم استخدام الصورة الافتراضية.
+              </p>
             </div>
 
             <div className="space-y-2">
