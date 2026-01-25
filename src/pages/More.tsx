@@ -249,12 +249,19 @@ export default function More() {
 
       {/* Request Store Sheet */}
       <Sheet open={requestSheetOpen} onOpenChange={setRequestSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl" dir="ltr">
-          <SheetHeader className="text-left">
-            <SheetTitle>Store Addition Request</SheetTitle>
-          </SheetHeader>
+        <SheetContent 
+          side="bottom" 
+          className="rounded-t-3xl max-h-[90vh] flex flex-col p-0" 
+          dir="ltr"
+        >
+          <div className="px-6 pt-6 pb-4">
+            <SheetHeader className="text-left">
+              <SheetTitle>Store Addition Request</SheetTitle>
+            </SheetHeader>
+          </div>
 
-          <div className="mt-4 space-y-5">
+          <div className="flex-1 overflow-y-auto px-6 pb-6 min-h-0">
+            <div className="space-y-5 pb-32 pt-2">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground block">
                 Store Name *
@@ -391,6 +398,7 @@ export default function More() {
                 "Submit Request"
               )}
             </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
