@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowRight,
   Heart,
@@ -7,6 +7,8 @@ import {
   Lightbulb,
   Loader2,
   AlertCircle,
+  Home,
+  MoreHorizontal,
 } from "lucide-react";
 import { sanitizeRichText } from "@/security/sanitizeHtml";
 import { getCouponByIdForUser } from "@/hooks/useAppData";
@@ -27,6 +29,7 @@ import { getDeviceId } from "@/hooks/useLeads";
 export default function CouponDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toggleFavorite, isFavorite } = useApp();
   const { toast } = useToast();
   const [copiedVariantId, setCopiedVariantId] = useState<string | null>(null);
@@ -577,6 +580,72 @@ export default function CouponDetail() {
 
       {/* Country Picker Modal */}
       <CountryPickerModal />
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border h-16 pb-safe">
+        <div className="flex items-center justify-around h-full">
+          <button
+            onClick={() => navigate('/')}
+            className={cn(
+              "flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors relative",
+              location.pathname === '/' ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            <div className="relative">
+              <Home
+                className="w-6 h-6"
+                strokeWidth={location.pathname === '/' ? 2.5 : 2}
+              />
+            </div>
+            <span className={cn(
+              "text-xs",
+              location.pathname === '/' ? "font-semibold" : "font-normal"
+            )}>
+              الرئيسية
+            </span>
+          </button>
+          <button
+            onClick={() => navigate('/favorites')}
+            className={cn(
+              "flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors relative",
+              location.pathname === '/favorites' ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            <div className="relative">
+              <Heart
+                className="w-6 h-6"
+                strokeWidth={location.pathname === '/favorites' ? 2.5 : 2}
+              />
+            </div>
+            <span className={cn(
+              "text-xs",
+              location.pathname === '/favorites' ? "font-semibold" : "font-normal"
+            )}>
+              المفضلة
+            </span>
+          </button>
+          <button
+            onClick={() => navigate('/more')}
+            className={cn(
+              "flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors relative",
+              location.pathname === '/more' ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            <div className="relative">
+              <MoreHorizontal
+                className="w-6 h-6"
+                strokeWidth={location.pathname === '/more' ? 2.5 : 2}
+              />
+            </div>
+            <span className={cn(
+              "text-xs",
+              location.pathname === '/more' ? "font-semibold" : "font-normal"
+            )}>
+              للمزيد
+            </span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
