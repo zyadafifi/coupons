@@ -254,33 +254,33 @@ export default function AdminStoreRequests() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>اسم المتجر</TableHead>
-                  <TableHead>الدولة</TableHead>
-                  <TableHead>رابط المتجر</TableHead>
-                  <TableHead>الملاحظات</TableHead>
-                  <TableHead>معرف الجهاز</TableHead>
-                  <TableHead>تاريخ الإنشاء</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
+                  <TableHead className="text-center">اسم المتجر</TableHead>
+                  <TableHead className="text-center">الدولة</TableHead>
+                  <TableHead className="text-center">رابط المتجر</TableHead>
+                  <TableHead className="text-center">الملاحظات</TableHead>
+                  <TableHead className="text-center">معرف الجهاز</TableHead>
+                  <TableHead className="text-center">تاريخ الإنشاء</TableHead>
+                  <TableHead className="text-center">الحالة</TableHead>
+                  <TableHead className="text-center">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {requests.map((request) => (
                   <TableRow key={request.id}>
-                    <TableCell className="font-medium">{request.storeName}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
+                    <TableCell className="font-medium text-center">{request.storeName}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
                         <MapPin className="w-3 h-3" />
                         {getCountryName(request.countryId)}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {request.storeUrl ? (
                         <a
                           href={request.storeUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-primary hover:underline text-sm"
+                          className="flex items-center justify-center gap-1 text-primary hover:underline text-sm"
                         >
                           <ExternalLink className="w-3 h-3" />
                           رابط
@@ -289,28 +289,32 @@ export default function AdminStoreRequests() {
                         <span className="text-muted-foreground text-sm">-</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {request.notes ? (
                         <span className="text-sm line-clamp-2">{request.notes}</span>
                       ) : (
                         <span className="text-muted-foreground text-sm">-</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       <code className="text-xs bg-muted px-2 py-1 rounded">
                         {request.deviceId.substring(0, 12)}...
                       </code>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
                         <Calendar className="w-3 h-3" />
                         {formatDate(request.createdAt)}
                       </div>
                     </TableCell>
-                    <TableCell>{getStatusBadge(request.status)}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        {getStatusBadge(request.status)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
                       {request.status === 'pending' && (
-                        <div className="flex gap-2">
+                        <div className="flex justify-center gap-2">
                           <Button
                             size="sm"
                             variant="outline"

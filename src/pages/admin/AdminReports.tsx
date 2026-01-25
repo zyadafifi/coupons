@@ -127,10 +127,10 @@ export default function AdminReports() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-right">الكود</TableHead>
-                <TableHead className="text-right">معرف الكوبون</TableHead>
-                <TableHead className="text-right">تاريخ البلاغ</TableHead>
-                <TableHead className="text-right">الإجراءات</TableHead>
+                <TableHead className="text-center">الكود</TableHead>
+                <TableHead className="text-center">معرف الكوبون</TableHead>
+                <TableHead className="text-center">تاريخ البلاغ</TableHead>
+                <TableHead className="text-center">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -152,24 +152,26 @@ export default function AdminReports() {
               ) : (
                 filteredReports.map((report) => (
                   <TableRow key={report.id}>
-                    <TableCell className="font-medium font-mono">
+                    <TableCell className="font-medium font-mono text-center">
                       {report.code}
                     </TableCell>
-                    <TableCell className="font-mono text-sm text-muted-foreground">
+                    <TableCell className="font-mono text-sm text-muted-foreground text-center">
                       {report.couponId}
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-muted-foreground text-sm text-center">
                       {formatReportDate(report.createdAt)}
                     </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(report.id, report.code)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(report.id, report.code)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

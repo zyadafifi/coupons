@@ -422,14 +422,14 @@ export default function AdminCoupons() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الكود</TableHead>
-                  <TableHead>العنوان</TableHead>
-                  <TableHead>المتجر</TableHead>
-                  <TableHead>الخصم</TableHead>
-                  <TableHead>الدولة</TableHead>
-                  <TableHead>المتغيرات</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
+                  <TableHead className="text-center">الكود</TableHead>
+                  <TableHead className="text-center">العنوان</TableHead>
+                  <TableHead className="text-center">المتجر</TableHead>
+                  <TableHead className="text-center">الخصم</TableHead>
+                  <TableHead className="text-center">الدولة</TableHead>
+                  <TableHead className="text-center">المتغيرات</TableHead>
+                  <TableHead className="text-center">الحالة</TableHead>
+                  <TableHead className="text-center">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -445,16 +445,16 @@ export default function AdminCoupons() {
                 ) : (
                   filteredCoupons.map((coupon) => (
                     <TableRow key={coupon.id}>
-                      <TableCell className="font-mono text-sm">
+                      <TableCell className="font-mono text-sm text-center">
                         {coupon.code}
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
+                      <TableCell className="max-w-[200px] truncate text-center">
                         {coupon.titleAr}
                       </TableCell>
-                      <TableCell>{getStoreName(coupon.storeId)}</TableCell>
-                      <TableCell>{coupon.discountLabel}</TableCell>
-                      <TableCell>{getCountryFlag(coupon.countryId)}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">{getStoreName(coupon.storeId)}</TableCell>
+                      <TableCell className="text-center">{coupon.discountLabel}</TableCell>
+                      <TableCell className="text-center">{getCountryFlag(coupon.countryId)}</TableCell>
+                      <TableCell className="text-center">
                         {coupon.variants && coupon.variants.length > 0 ? (
                           <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
                             {coupon.variants.length} متغير
@@ -465,14 +465,16 @@ export default function AdminCoupons() {
                           </span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Switch
-                          checked={coupon.isActive}
-                          onCheckedChange={() => handleToggleActive(coupon)}
-                        />
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <Switch
+                            checked={coupon.isActive}
+                            onCheckedChange={() => handleToggleActive(coupon)}
+                          />
+                        </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <Button
                             variant="ghost"
                             size="icon"

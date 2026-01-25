@@ -306,30 +306,30 @@ export function CouponUsageTable({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-right font-medium w-[100px]">الكود</TableHead>
-                <TableHead className="text-right font-medium">المتجر</TableHead>
-                <TableHead className="text-right font-medium w-[90px]">النوع</TableHead>
+                <TableHead className="text-center font-medium w-[100px]">الكود</TableHead>
+                <TableHead className="text-center font-medium">المتجر</TableHead>
+                <TableHead className="text-center font-medium w-[90px]">النوع</TableHead>
                 <TableHead
-                  className="text-right font-medium w-[70px] cursor-pointer select-none"
+                  className="text-center font-medium w-[70px] cursor-pointer select-none"
                   onClick={() => toggleSort('uses')}
                 >
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center justify-center gap-1">
                     الاستخدامات
                     <SortIcon column="uses" />
                   </span>
                 </TableHead>
-                <TableHead className="text-right font-medium w-[80px]">مستخدمون فريدون</TableHead>
+                <TableHead className="text-center font-medium w-[80px]">مستخدمون فريدون</TableHead>
                 <TableHead
-                  className="text-right font-medium w-[110px] cursor-pointer select-none"
+                  className="text-center font-medium w-[110px] cursor-pointer select-none"
                   onClick={() => toggleSort('lastUsed')}
                 >
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center justify-center gap-1">
                     آخر استخدام
                     <SortIcon column="lastUsed" />
                   </span>
                 </TableHead>
-                <TableHead className="text-right font-medium w-[70px]">الدولة</TableHead>
-                <TableHead className="text-right font-medium w-[70px]">القسم</TableHead>
+                <TableHead className="text-center font-medium w-[70px]">الدولة</TableHead>
+                <TableHead className="text-center font-medium w-[70px]">القسم</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -342,18 +342,18 @@ export function CouponUsageTable({
               ) : (
                 paginated.map((row) => (
                   <TableRow key={row.key}>
-                    <TableCell className="font-mono text-xs py-2">{row.code || '—'}</TableCell>
-                    <TableCell className="text-xs py-2">{row.storeName}</TableCell>
-                    <TableCell className="text-xs py-2">
+                    <TableCell className="font-mono text-xs py-2 text-center">{row.code || '—'}</TableCell>
+                    <TableCell className="text-xs py-2 text-center">{row.storeName}</TableCell>
+                    <TableCell className="text-xs py-2 text-center">
                       {row.type === 'base' ? 'أساسي' : `متغير · ${row.variantLabel ?? '—'}`}
                     </TableCell>
-                    <TableCell className="text-xs py-2 font-medium">{row.uses}</TableCell>
-                    <TableCell className="text-xs py-2">{row.uniqueUsers}</TableCell>
-                    <TableCell className="text-xs py-2 text-muted-foreground">
+                    <TableCell className="text-xs py-2 font-medium text-center">{row.uses}</TableCell>
+                    <TableCell className="text-xs py-2 text-center">{row.uniqueUsers}</TableCell>
+                    <TableCell className="text-xs py-2 text-muted-foreground text-center">
                       {formatLastUsed(row.lastUsed)}
                     </TableCell>
-                    <TableCell className="text-xs py-2 text-muted-foreground">{row.countryName}</TableCell>
-                    <TableCell className="text-xs py-2 text-muted-foreground">{row.categoryName}</TableCell>
+                    <TableCell className="text-xs py-2 text-muted-foreground text-center">{row.countryName}</TableCell>
+                    <TableCell className="text-xs py-2 text-muted-foreground text-center">{row.categoryName}</TableCell>
                   </TableRow>
                 ))
               )}

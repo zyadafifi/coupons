@@ -191,10 +191,10 @@ export default function AdminLeads() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-right">الاسم</TableHead>
-                <TableHead className="text-right">رقم الهاتف</TableHead>
-                <TableHead className="text-right">البلد</TableHead>
-                <TableHead className="text-right">تاريخ التسجيل</TableHead>
+                <TableHead className="text-center">الاسم</TableHead>
+                <TableHead className="text-center">رقم الهاتف</TableHead>
+                <TableHead className="text-center">البلد</TableHead>
+                <TableHead className="text-center">تاريخ التسجيل</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -218,8 +218,8 @@ export default function AdminLeads() {
                   const country = getCountryInfo(lead.country);
                   return (
                     <TableRow key={lead.id}>
-                      <TableCell className="font-medium">{lead.name}</TableCell>
-                      <TableCell dir="ltr" className="text-right">
+                      <TableCell className="font-medium text-center">{lead.name}</TableCell>
+                      <TableCell dir="ltr" className="text-center">
                         <a 
                           href={`tel:${lead.countryCode}${lead.phone}`}
                           className="text-primary hover:underline"
@@ -227,13 +227,13 @@ export default function AdminLeads() {
                           {lead.countryCode} {lead.phone}
                         </a>
                       </TableCell>
-                      <TableCell>
-                        <span className="flex items-center gap-1.5">
+                      <TableCell className="text-center">
+                        <span className="flex items-center justify-center gap-1.5">
                           <span>{country?.flag}</span>
                           <span className="text-sm">{country?.nameAr || lead.country}</span>
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-sm">
+                      <TableCell className="text-muted-foreground text-sm text-center">
                         {formatLeadDate(lead.createdAt)}
                       </TableCell>
                     </TableRow>

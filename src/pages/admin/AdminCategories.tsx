@@ -120,11 +120,11 @@ export default function AdminCategories() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الأيقونة</TableHead>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>الترتيب</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
+                  <TableHead className="text-center">الأيقونة</TableHead>
+                  <TableHead className="text-center">الاسم</TableHead>
+                  <TableHead className="text-center">الترتيب</TableHead>
+                  <TableHead className="text-center">الحالة</TableHead>
+                  <TableHead className="text-center">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -137,17 +137,19 @@ export default function AdminCategories() {
                 ) : (
                   categories.map((category) => (
                     <TableRow key={category.id}>
-                      <TableCell className="text-2xl">{category.icon}</TableCell>
-                      <TableCell>{category.nameAr}</TableCell>
-                      <TableCell>{category.sortOrder}</TableCell>
-                      <TableCell>
-                        <Switch
-                          checked={category.isActive}
-                          onCheckedChange={() => handleToggleActive(category)}
-                        />
+                      <TableCell className="text-2xl text-center">{category.icon}</TableCell>
+                      <TableCell className="text-center">{category.nameAr}</TableCell>
+                      <TableCell className="text-center">{category.sortOrder}</TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <Switch
+                            checked={category.isActive}
+                            onCheckedChange={() => handleToggleActive(category)}
+                          />
+                        </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <Button
                             variant="ghost"
                             size="icon"

@@ -145,12 +145,12 @@ export default function AdminStores() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الشعار</TableHead>
-                  <TableHead>الاسم (عربي)</TableHead>
-                  <TableHead>الاسم (إنجليزي)</TableHead>
-                  <TableHead>الدولة</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
+                  <TableHead className="text-center">الشعار</TableHead>
+                  <TableHead className="text-center">الاسم (عربي)</TableHead>
+                  <TableHead className="text-center">الاسم (إنجليزي)</TableHead>
+                  <TableHead className="text-center">الدولة</TableHead>
+                  <TableHead className="text-center">الحالة</TableHead>
+                  <TableHead className="text-center">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -163,26 +163,30 @@ export default function AdminStores() {
                 ) : (
                   stores.map((store) => (
                     <TableRow key={store.id}>
-                      <TableCell>
-                        {store.logoUrl ? (
-                          <img src={store.logoUrl} alt={store.nameAr} className="w-10 h-10 rounded object-cover" />
-                        ) : (
-                          <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-muted-foreground">
-                            🏪
-                          </div>
-                        )}
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          {store.logoUrl ? (
+                            <img src={store.logoUrl} alt={store.nameAr} className="w-10 h-10 rounded object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-muted-foreground">
+                              🏪
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell>{store.nameAr}</TableCell>
-                      <TableCell>{store.nameEn}</TableCell>
-                      <TableCell>{getCountryName(store.countryId)}</TableCell>
-                      <TableCell>
-                        <Switch
-                          checked={store.isActive}
-                          onCheckedChange={() => handleToggleActive(store)}
-                        />
+                      <TableCell className="text-center">{store.nameAr}</TableCell>
+                      <TableCell className="text-center">{store.nameEn}</TableCell>
+                      <TableCell className="text-center">{getCountryName(store.countryId)}</TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <Switch
+                            checked={store.isActive}
+                            onCheckedChange={() => handleToggleActive(store)}
+                          />
+                        </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <Button
                             variant="ghost"
                             size="icon"

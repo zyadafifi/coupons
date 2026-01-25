@@ -375,37 +375,39 @@ export function CouponUsageByStoreAccordion({
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="text-right font-medium w-[100px]">الكود</TableHead>
-                      <TableHead className="text-right font-medium w-[90px]">النوع</TableHead>
-                      <TableHead className="text-right font-medium w-[80px]">الخصم</TableHead>
-                      <TableHead className="text-right font-medium w-[90px]">الحالة</TableHead>
-                      <TableHead className="text-right font-medium w-[70px]">الاستخدامات</TableHead>
-                      <TableHead className="text-right font-medium w-[110px]">آخر استخدام</TableHead>
-                      <TableHead className="text-right font-medium w-[85px]">انتهاء الصلاحية</TableHead>
-                      <TableHead className="text-right font-medium w-[70px]">التقارير</TableHead>
+                      <TableHead className="text-center font-medium w-[100px]">الكود</TableHead>
+                      <TableHead className="text-center font-medium w-[90px]">النوع</TableHead>
+                      <TableHead className="text-center font-medium w-[80px]">الخصم</TableHead>
+                      <TableHead className="text-center font-medium w-[90px]">الحالة</TableHead>
+                      <TableHead className="text-center font-medium w-[70px]">الاستخدامات</TableHead>
+                      <TableHead className="text-center font-medium w-[110px]">آخر استخدام</TableHead>
+                      <TableHead className="text-center font-medium w-[85px]">انتهاء الصلاحية</TableHead>
+                      <TableHead className="text-center font-medium w-[70px]">التقارير</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {visibleRows.map((row) => (
                       <TableRow key={row.key}>
-                        <TableCell className="font-mono text-xs py-2">{row.code || '—'}</TableCell>
-                        <TableCell className="text-xs py-2">
+                        <TableCell className="font-mono text-xs py-2 text-center">{row.code || '—'}</TableCell>
+                        <TableCell className="text-xs py-2 text-center">
                           {row.type === 'base' ? 'أساسي' : `متغير · ${row.variantLabel ?? '—'}`}
                         </TableCell>
-                        <TableCell className="text-xs py-2">{row.discountLabel}</TableCell>
-                        <TableCell className="text-xs py-2">
-                          <Badge variant={statusVariant[row.status]} className="text-xs">
-                            {statusLabel[row.status]}
-                          </Badge>
+                        <TableCell className="text-xs py-2 text-center">{row.discountLabel}</TableCell>
+                        <TableCell className="text-xs py-2 text-center">
+                          <div className="flex justify-center">
+                            <Badge variant={statusVariant[row.status]} className="text-xs">
+                              {statusLabel[row.status]}
+                            </Badge>
+                          </div>
                         </TableCell>
-                        <TableCell className="text-xs py-2 font-medium">{row.uses ? row.uses : '—'}</TableCell>
-                        <TableCell className="text-xs py-2 text-muted-foreground">
+                        <TableCell className="text-xs py-2 font-medium text-center">{row.uses ? row.uses : '—'}</TableCell>
+                        <TableCell className="text-xs py-2 text-muted-foreground text-center">
                           {formatLastUsed(row.lastUsed)}
                         </TableCell>
-                        <TableCell className="text-xs py-2 text-muted-foreground">
+                        <TableCell className="text-xs py-2 text-muted-foreground text-center">
                           {formatExpiry(row.expiryDate)}
                         </TableCell>
-                        <TableCell className="text-xs py-2">{row.reportsCount}</TableCell>
+                        <TableCell className="text-xs py-2 text-center">{row.reportsCount}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
