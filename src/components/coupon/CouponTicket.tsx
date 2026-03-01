@@ -118,11 +118,11 @@ export function CouponTicket({
             {/* Right side: Store Logo - Far right */}
             <div className="shrink-0 flex items-center">
               {storeLogoUrl ? (
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-md">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden">
                   <img
                     src={storeLogoUrl}
                     alt=""
-                    className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                    className="w-full h-full rounded-full object-cover"
                   />
                 </div>
               ) : (
