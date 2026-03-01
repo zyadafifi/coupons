@@ -354,7 +354,7 @@ export default function CouponDetail() {
               <img
                 src={storeLogoUrl}
                 alt={store?.name || ""}
-                className="w-20 sm:w-24 lg:w-28 h-auto object-contain"
+                className="sm:w-24 lg:w-28 h-auto object-contain"
               />
             ) : (
               <div
