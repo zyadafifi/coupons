@@ -139,7 +139,7 @@ export function CouponCard({ coupon }: CouponCardProps) {
                     <img
                       src={storeLogoUrl}
                       alt={storeName}
-                      className="w-10 h-10 rounded-full object-contain bg-white p-1 shadow-md"
+                      className="w-10 h-10 rounded-full object-contain bg-white shadow-md"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-white shadow-md">
