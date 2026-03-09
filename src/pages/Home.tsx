@@ -74,14 +74,18 @@ export default function Home() {
       );
     }
 
-    // Search filter
+    // Search filter (normalized: trim + case-insensitive; includes English store name)
     if (searchQuery) {
-      result = result.filter(
-        (coupon) =>
-          coupon.title.includes(searchQuery) ||
-          coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (coupon.storeName && coupon.storeName.includes(searchQuery))
-      );
+      const q = searchQuery.trim().toLowerCase();
+      if (q) {
+        result = result.filter(
+          (coupon) =>
+            coupon.title.toLowerCase().includes(q) ||
+            coupon.code.toLowerCase().includes(q) ||
+            (coupon.storeName && coupon.storeName.toLowerCase().includes(q)) ||
+            (coupon.storeNameEn && coupon.storeNameEn.toLowerCase().includes(q))
+        );
+      }
     }
 
     // Sort based on sortBy option

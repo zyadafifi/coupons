@@ -68,6 +68,7 @@ export interface Coupon {
   updatedAt?: string;
   // Pre-resolved display fields
   storeName?: string;
+  storeNameEn?: string;
   storeLogoUrl?: string;
   categoryName?: string;
   // Variants for different user types

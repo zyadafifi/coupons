@@ -37,7 +37,7 @@ const config: CapacitorConfig = {
   },
   android: {
     allowMixedContent: false,
-    captureInput: true,
+    captureInput: false, // false so WebView gets input events per keystroke (fixes search on some devices)
     webContentsDebuggingEnabled: true,
   },
   ios: {

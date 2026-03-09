@@ -22,9 +22,12 @@ export function TopBar({ searchQuery, onSearchChange }: TopBarProps) {
               <Input
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
+                onInput={(e) => onSearchChange(e.currentTarget.value)}
                 placeholder="البحث عن الكوبونات والعروض..."
                 className="h-11 rounded-2xl bg-background/80 border-2 border-border/50 pr-4 pl-10 text-sm placeholder:text-muted-foreground/60 focus:border-primary focus:bg-background transition-all duration-200 shadow-sm"
                 dir="rtl"
+                inputMode="search"
+                autoComplete="off"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
             </div>
