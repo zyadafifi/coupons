@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ArrowRight } from "lucide-react";
-import { useActiveCategories } from "@/hooks/useAppData";
 import { cn } from "@/lib/utils";
+import type { Category } from "@/data/types";
 
 export type SortOption = "popular" | "a-z" | "z-a";
 
@@ -11,8 +11,9 @@ interface FilterSheetProps {
   onOpenChange: (open: boolean) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
-  selectedCategory: string;
+  selectedCategoryId: string;
   onCategoryChange: (categoryId: string) => void;
+  categories: Category[];
   onApply: () => void;
 }
 
@@ -22,46 +23,22 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: "a-z", label: "أ - ي" },
 ];
 
-const categoryEmojis: Record<string, string> = {
-  all: "🏷️",
-  delivery: "🍔",
-  scratch: "🎰",
-  china: "🏮",
-  accessories: "👓",
-  electronics: "📱",
-  fashion: "👗",
-  food: "🍕",
-  travel: "✈️",
-  entertainment: "🎬",
-  health: "💊",
-  sports: "⚽",
-  beauty: "💄",
-  home: "🏠",
-  kids: "👶",
-  pets: "🐕",
-  books: "📚",
-  games: "🎮",
-  music: "🎵",
-  art: "🎨",
-  auto: "🚗",
-  services: "🔧",
-  education: "📖",
-};
+const ALL_CATEGORY = { id: "all", name: "الكل", nameEn: "All", icon: "🏷️" } as Category;
 
 export function FilterSheet({
   open,
   onOpenChange,
   sortBy,
   onSortChange,
-  selectedCategory,
+  selectedCategoryId,
   onCategoryChange,
+  categories,
   onApply,
 }: FilterSheetProps) {
-  const { categories } = useActiveCategories();
-
-  const hasActiveFilters = useMemo(() => {
-    return selectedCategory !== "all" || sortBy !== "popular";
-  }, [selectedCategory, sortBy]);
+  const hasActiveFilters = useMemo(
+    () => sortBy !== "popular" || selectedCategoryId !== "all",
+    [sortBy, selectedCategoryId]
+  );
 
   const triggerHaptic = () => {
     if (navigator.vibrate) navigator.vibrate(10);
@@ -82,6 +59,8 @@ export function FilterSheet({
     triggerHaptic();
     onCategoryChange(categoryId);
   };
+
+  const categoryList = useMemo(() => [ALL_CATEGORY, ...categories], [categories]);
 
   const handleApply = () => {
     triggerHaptic();
@@ -126,7 +105,7 @@ export function FilterSheet({
           {/* Sort Section */}
           <div className="pb-5">
             <h4 className="text-sm font-medium text-foreground text-right mb-3">ترتيب حسب:</h4>
-            <div className="flex gap-2 justify-end">
+            <div className="flex flex-wrap gap-2 justify-end">
               {sortOptions.map((option) => (
                 <button
                   key={option.value}
@@ -144,26 +123,23 @@ export function FilterSheet({
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-gray-300 mb-5" />
-
-          {/* Categories Section */}
+          {/* Categories Section - الأقسام */}
           <div className="pb-5">
             <h4 className="text-sm font-medium text-foreground text-right mb-3">الأقسام:</h4>
             <div className="flex flex-wrap gap-2 justify-end">
-              {categories.map((category) => (
+              {categoryList.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryChange(category.id)}
                   className={cn(
-                    "px-3 h-9 rounded-full text-sm font-medium border transition-all flex items-center gap-1.5",
-                    selectedCategory === category.id
-                      ? "bg-[#D4EDE4] border-[#D4EDE4] text-foreground"
-                      : "bg-white border-gray-200 text-muted-foreground"
+                    "flex items-center gap-1.5 px-4 h-10 rounded-full text-sm font-medium border-2 transition-all shrink-0",
+                    selectedCategoryId === category.id
+                      ? "bg-white border-gray-400 text-foreground"
+                      : "bg-transparent border-gray-300 text-muted-foreground"
                   )}
                 >
-                  <span>{categoryEmojis[category.id] || "🏷️"}</span>
                   <span>{category.name}</span>
+                  {category.icon && <span aria-hidden>{category.icon}</span>}
                 </button>
               ))}
             </div>

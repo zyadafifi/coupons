@@ -9,8 +9,10 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-background" dir="rtl">
-      <main className="pb-20">
-        {children}
+      <main className="h-screen pb-20 flex flex-col overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+          {children}
+        </div>
       </main>
       <BottomNav />
       <CountryPickerModal />

@@ -4,13 +4,23 @@ import { Loader2 } from 'lucide-react';
 interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
   children: ReactNode;
+  /** Optional: called with the scroll container element so parent can use it e.g. for Intersection Observer root */
+  scrollContainerRef?: (el: HTMLDivElement | null) => void;
 }
 
-export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
+export function PullToRefresh({ onRefresh, children, scrollContainerRef }: PullToRefreshProps) {
   const [pulling, setPulling] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const setRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      scrollContainerRef?.(el);
+    },
+    [scrollContainerRef]
+  );
   const startY = useRef(0);
   const currentY = useRef(0);
 
@@ -60,7 +70,7 @@ export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
 
   return (
     <div 
-      ref={containerRef}
+      ref={setRef}
       className="h-full overflow-y-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

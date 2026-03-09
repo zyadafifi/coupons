@@ -1,14 +1,20 @@
+import { useEffect, useRef } from 'react';
 import { useActiveCategories } from '@/hooks/useAppData';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface CategoryChipsProps {
-  selectedCategory: string;
+  activeCategory: string;
   onSelectCategory: (categoryId: string) => void;
 }
 
-export function CategoryChips({ selectedCategory, onSelectCategory }: CategoryChipsProps) {
+export function CategoryChips({ activeCategory, onSelectCategory }: CategoryChipsProps) {
   const { categories, loading, error } = useActiveCategories();
+  const activeChipRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    activeChipRef.current?.scrollIntoView({ inline: 'nearest', behavior: 'smooth', block: 'nearest' });
+  }, [activeCategory]);
 
   // Show skeleton while loading
   if (loading) {
@@ -44,10 +50,11 @@ export function CategoryChips({ selectedCategory, onSelectCategory }: CategoryCh
       {categories.map((category) => (
         <button
           key={category.id}
+          ref={activeCategory === category.id ? activeChipRef : undefined}
           onClick={() => onSelectCategory(category.id)}
           className={cn(
             "flex items-center gap-1.5 px-4 py-2 rounded-full whitespace-nowrap transition-all text-sm font-medium shrink-0",
-            selectedCategory === category.id
+            activeCategory === category.id
               ? "bg-primary text-primary-foreground"
               : "bg-card text-muted-foreground border border-border hover:border-primary/30"
           )}

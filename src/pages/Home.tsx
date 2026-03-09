@@ -13,14 +13,19 @@ import { FilterSheet, SortOption } from "@/components/shared/FilterSheet";
 import { useActiveCoupons, useActiveCategories } from "@/hooks/useAppData";
 import { useApp } from "@/contexts/AppContext";
 import { couponsCopy } from "@/content/couponsCopy.ar";
+import type { Coupon } from "@/data/types";
+
+type CategorySection = { categoryId: string; coupons: Coupon[] };
 
 export default function Home() {
   const { selectedCountry } = useApp();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("popular");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [scrollSyncedCategory, setScrollSyncedCategory] = useState("all");
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const hasInitialized = useRef(false);
   const [showInitialSkeleton, setShowInitialSkeleton] = useState(
     !hasInitialized.current
@@ -33,20 +38,19 @@ export default function Home() {
     loading: couponsLoading,
     error: couponsError,
   } = useActiveCoupons(countryId);
-  const { loading: categoriesLoading, error: categoriesError } =
+  const { categories, loading: categoriesLoading, error: categoriesError } =
     useActiveCategories();
 
   const isLoading = couponsLoading || categoriesLoading;
   const hasError = couponsError || categoriesError;
 
   const hasSearchQuery = searchQuery.trim().length > 0;
-  const hasActiveFilters = selectedCategory !== "all" || sortBy !== "popular";
+  const hasActiveFilters = sortBy !== "popular" || selectedCategory !== "all";
 
   const clearFilters = useCallback(() => {
-    // Haptic feedback
     if (navigator.vibrate) navigator.vibrate(10);
-    setSelectedCategory("all");
     setSortBy("popular");
+    setSelectedCategory("all");
   }, []);
 
   // First launch: show skeleton for 500ms to avoid jank
@@ -67,14 +71,9 @@ export default function Home() {
   const filteredCoupons = useMemo(() => {
     let result = [...coupons];
 
-    // Filter by category
-    if (selectedCategory && selectedCategory !== "all") {
-      result = result.filter(
-        (coupon) => coupon.categoryId === selectedCategory
-      );
+    if (selectedCategory !== "all") {
+      result = result.filter((c) => c.categoryId === selectedCategory);
     }
-
-    // Search filter (normalized: trim + case-insensitive; includes English store name)
     if (searchQuery) {
       const q = searchQuery.trim().toLowerCase();
       if (q) {
@@ -88,32 +87,53 @@ export default function Home() {
       }
     }
 
-    // Sort based on sortBy option
-    if (sortBy === "popular") {
-      result = [...result].sort((a, b) => b.usageCount - a.usageCount);
-    } else if (sortBy === "a-z") {
-      result = [...result].sort((a, b) => a.title.localeCompare(b.title, "ar"));
-    } else if (sortBy === "z-a") {
-      result = [...result].sort((a, b) => b.title.localeCompare(a.title, "ar"));
-    }
-
     return result;
-  }, [coupons, selectedCategory, searchQuery, sortBy]);
+  }, [coupons, searchQuery, selectedCategory]);
 
-  // Determine empty state type
+  const sortCoupons = useCallback(
+    (list: Coupon[]) => {
+      if (sortBy === "popular") {
+        return [...list].sort((a, b) => b.usageCount - a.usageCount);
+      }
+      if (sortBy === "a-z") {
+        return [...list].sort((a, b) => a.title.localeCompare(b.title, "ar"));
+      }
+      if (sortBy === "z-a") {
+        return [...list].sort((a, b) => b.title.localeCompare(a.title, "ar"));
+      }
+      return list;
+    },
+    [sortBy]
+  );
+
+  const sections = useMemo(() => {
+    const categoryOrder = categories.filter((c) => c.id !== "all").map((c) => c.id);
+    const byCategory = new Map<string, Coupon[]>();
+    for (const coupon of filteredCoupons) {
+      const id = coupon.categoryId;
+      if (!byCategory.has(id)) byCategory.set(id, []);
+      byCategory.get(id)!.push(coupon);
+    }
+    const ordered = categoryOrder
+      .map((categoryId) => ({
+        categoryId,
+        coupons: sortCoupons(byCategory.get(categoryId) ?? []),
+      }))
+      .filter((s) => s.coupons.length > 0);
+    const seen = new Set(categoryOrder);
+    const rest = Array.from(byCategory.entries())
+      .filter(([id]) => !seen.has(id))
+      .map(([categoryId, coupons]) => ({ categoryId, coupons: sortCoupons(coupons) }))
+      .filter((s) => s.coupons.length > 0);
+    return [...ordered, ...rest];
+  }, [filteredCoupons, categories, sortCoupons]);
+
   const getEmptyStateContent = () => {
     if (hasSearchQuery) {
       return {
         icon: "🔍",
         title: couponsCopy.empty.noResults,
         description: couponsCopy.empty.noResultsDescription.replace("{query}", searchQuery),
-      };
-    }
-    if (selectedCategory !== "all") {
-      return {
-        icon: "📂",
-        title: couponsCopy.empty.noCouponsInCategory,
-        description: couponsCopy.empty.noCouponsInCategoryDescription,
       };
     }
     return {
@@ -123,21 +143,55 @@ export default function Home() {
     };
   };
 
+  const handleScrollToSection = useCallback((categoryId: string) => {
+    if (navigator.vibrate) navigator.vibrate(10);
+    if (categoryId === "all") {
+      const root = scrollContainerRef.current;
+      if (root) root.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const el = document.querySelector(`[data-category-id="${categoryId}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  useEffect(() => {
+    const root = scrollContainerRef.current;
+    if (!root) return;
+
+    const sentinel = document.querySelector("[data-category-id=\"all\"]");
+    const sectionEls = sections
+      .map((s) => document.querySelector(`[data-category-id="${s.categoryId}"]`))
+      .filter(Boolean) as Element[];
+
+    const observed = sentinel ? [sentinel, ...sectionEls] : sectionEls;
+    if (observed.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        const byRatio = [...visible].sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+        const top = byRatio[0]?.target;
+        if (!top) return;
+        const id = (top as HTMLElement).getAttribute("data-category-id") ?? "all";
+        setScrollSyncedCategory(id);
+      },
+      { root, rootMargin: "-20% 0px -60% 0px", threshold: [0, 0.1, 0.5, 1] }
+    );
+
+    observed.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [sections]);
+
   return (
     <>
       <CountryPickerModal />
-      <PullToRefresh onRefresh={handleRefresh}>
-        <div className="min-h-screen pb-20 bg-background">
-          {/* Top Bar */}
+      <div className="flex flex-col h-full min-h-0 bg-background">
+        {/* Fixed: Top Bar, Banner, Categories — do not scroll */}
+        <div className="shrink-0">
           <TopBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
-          {/* Banner Carousel */}
           <HomeBannerCarousel />
-
-          {/* Hero Carousel */}
           <HeroCarousel />
-
-          {/* Categories with Filter Button */}
           <div className="pt-4 pb-3">
             <div className="flex items-center gap-2 px-4">
               <button
@@ -153,7 +207,6 @@ export default function Home() {
                   <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-primary rounded-full animate-pulse" />
                 )}
               </button>
-              {/* Clear Filters Chip */}
               {hasActiveFilters && (
                 <button
                   onClick={clearFilters}
@@ -165,62 +218,79 @@ export default function Home() {
               )}
               <div className="flex-1 overflow-hidden">
                 <CategoryChips
-                  selectedCategory={selectedCategory}
-                  onSelectCategory={setSelectedCategory}
+                  activeCategory={scrollSyncedCategory}
+                  onSelectCategory={handleScrollToSection}
                 />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Refresh Indicator */}
-          <RefreshIndicator isVisible={isRefreshing} />
-
-          {/* Error Banner */}
-          {hasError && (
-            <div className="mx-4 mb-4 p-4 bg-card border-2 border-border rounded-2xl shadow-card animate-fade-in">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center shrink-0">
-                  <span className="text-2xl">⚠️</span>
+        {/* Scrollable: only the coupon list area */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          <PullToRefresh
+            onRefresh={handleRefresh}
+            scrollContainerRef={(el) => {
+              (scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+            }}
+          >
+            <div className="pb-4">
+              <RefreshIndicator isVisible={isRefreshing} />
+              {hasError && (
+                <div className="mx-4 mb-4 p-4 bg-card border-2 border-border rounded-2xl shadow-card animate-fade-in">
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-destructive/10 flex items-center justify-center shrink-0">
+                      <span className="text-2xl">⚠️</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground mb-1">
+                        تعذر تحميل البيانات
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        تحقق من اتصالك بالإنترنت وحاول مرة أخرى
+                      </p>
+                      <button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 shadow-sm hover:shadow-md active:scale-95"
+                      >
+                        <RefreshCw
+                          className={`w-4 h-4 ${
+                            isRefreshing ? "animate-spin" : ""
+                          }`}
+                        />
+                        إعادة المحاولة
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground mb-1">
-                    تعذر تحميل البيانات
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    تحقق من اتصالك بالإنترنت وحاول مرة أخرى
-                  </p>
-                  <button
-                    onClick={handleRefresh}
-                    disabled={isRefreshing}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 shadow-sm hover:shadow-md active:scale-95"
-                  >
-                    <RefreshCw
-                      className={`w-4 h-4 ${
-                        isRefreshing ? "animate-spin" : ""
-                      }`}
-                    />
-                    إعادة المحاولة
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Coupons List */}
-          <div className="px-4 space-y-3">
+              )}
+              {/* Coupons List (grouped by category for scroll spy) */}
+              <div className="px-4 space-y-3">
             {showInitialSkeleton || isLoading ? (
               <CompactSkeleton />
             ) : filteredCoupons.length > 0 ? (
-              filteredCoupons.map((coupon, index) => (
-                <div key={coupon.id}>
-                  <div
-                    className="animate-slide-up"
-                    style={{ animationDelay: `${0.1 + index * 0.08}s` }}
+              <>
+                <div data-category-id="all" aria-hidden className="h-0 overflow-hidden" />
+                {sections.map(({ categoryId, coupons: sectionCoupons }) => (
+                  <section
+                    key={categoryId}
+                    data-category-id={categoryId}
+                    className="space-y-3"
                   >
-                    <CouponCard coupon={coupon} />
-                  </div>
-                </div>
-              ))
+                    {sectionCoupons.map((coupon, index) => (
+                      <div key={coupon.id}>
+                        <div
+                          className="animate-slide-up"
+                          style={{ animationDelay: `${0.1 + index * 0.08}s` }}
+                        >
+                          <CouponCard coupon={coupon} />
+                        </div>
+                      </div>
+                    ))}
+                  </section>
+                ))}
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center py-20 px-8 text-center animate-fade-in">
                 <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-5 shadow-sm">
@@ -236,19 +306,27 @@ export default function Home() {
                 </p>
               </div>
             )}
-          </div>
+              </div>
+            </div>
+          </PullToRefresh>
         </div>
-      </PullToRefresh>
+      </div>
 
-      {/* Filter Sheet */}
+      {/* Filter Sheet: sort + categories in one place */}
       <FilterSheet
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
         sortBy={sortBy}
         onSortChange={setSortBy}
-        selectedCategory={selectedCategory}
+        selectedCategoryId={selectedCategory}
         onCategoryChange={setSelectedCategory}
-        onApply={() => setIsFilterOpen(false)}
+        categories={categories}
+        onApply={() => {
+          setIsFilterOpen(false);
+          if (selectedCategory !== "all") {
+            setTimeout(() => handleScrollToSection(selectedCategory), 100);
+          }
+        }}
       />
     </>
   );
