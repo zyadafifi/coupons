@@ -83,11 +83,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
           setIsAdmin(true);
           setError(null);
         } else {
-          // Not an admin, sign out
-          await signOut(auth);
+          // Not an admin: do NOT sign out - end-users stay signed in for UserAuthContext.
+          // Admin context just shows "no admin" so admin routes stay protected.
           setUser(null);
           setIsAdmin(false);
-          setError('غير مصرح لك بالدخول');
+          setError(null);
         }
       } else {
         setUser(null);

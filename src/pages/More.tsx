@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ChevronLeft, HelpCircle, MessageSquare, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, HelpCircle, MessageSquare, Loader2, LogOut } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +19,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/contexts/AppContext";
+import { useUserAuth } from "@/contexts/UserAuthContext";
 import { useActiveCountries } from "@/hooks/useAppData";
 import { addStoreRequest } from "@/hooks/useFirestore";
 import { getDeviceId } from "@/hooks/useLeads";
@@ -25,7 +27,9 @@ import { parseAndValidatePhone } from "@/security/phone";
 import { phoneCountries } from "@/data/phone-countries";
 
 export default function More() {
+  const navigate = useNavigate();
   const { selectedCountry } = useApp();
+  const { user, signOut } = useUserAuth();
   const { countries } = useActiveCountries();
   const [requestSheetOpen, setRequestSheetOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -189,6 +193,11 @@ export default function More() {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
+  };
+
   const menuItems = [
     {
       icon: MessageSquare,
@@ -205,6 +214,17 @@ export default function More() {
         toast({ title: "قريباً", description: "صفحة المساعدة قيد الإنشاء" }),
       hasArrow: true,
     },
+    ...(user
+      ? [
+          {
+            icon: LogOut,
+            label: "تسجيل الخروج",
+            sublabel: user.email || user.phoneNumber || "تسجيل الخروج من الحساب",
+            action: handleSignOut,
+            hasArrow: false,
+          },
+        ]
+      : []),
   ];
 
   return (

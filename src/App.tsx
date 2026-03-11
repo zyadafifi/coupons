@@ -4,7 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
-import { OnboardingGuard } from "@/components/layout/OnboardingGuard";
+import { UserAuthProvider } from "@/contexts/UserAuthContext";
+import { UserAuthGuard } from "@/components/layout/UserAuthGuard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useStatusBar } from "@/hooks/useStatusBar";
 import { useSplashScreen } from "@/hooks/useSplashScreen";
@@ -15,6 +16,9 @@ import Favorites from "./pages/Favorites";
 import More from "./pages/More";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
 import { AndroidBackButtonHandler } from "./components/mobile/AndroidBackButtonHandler";
 import { AnimatedSplash } from "./components/mobile/AnimatedSplash";
 
@@ -46,15 +50,16 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AdminAuthProvider>
-        <AppProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <AnimatedSplash />
-            <HashRouter>
-              <AndroidBackButtonHandler />
-              <OnboardingGuard>
-                <Routes>
+        <UserAuthProvider>
+          <AppProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <AnimatedSplash />
+              <HashRouter>
+                <AndroidBackButtonHandler />
+                <UserAuthGuard>
+                  <Routes>
                   {/* Admin Routes - Only available when VITE_ENABLE_ADMIN=true */}
                   {isAdminEnabled() ? (
                     <>
@@ -148,8 +153,9 @@ const App = () => {
                   )}
 
                   {/* Auth Routes - Always accessible */}
-                  {/* /login redirects to /onboarding (phone-based user entry) */}
-                  <Route path="/login" element={<Navigate to="/onboarding" replace />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/onboarding" element={<Onboarding />} />
 
                   {/* User Routes */}
@@ -187,10 +193,11 @@ const App = () => {
                   />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </OnboardingGuard>
-            </HashRouter>
-          </TooltipProvider>
-        </AppProvider>
+                </UserAuthGuard>
+              </HashRouter>
+            </TooltipProvider>
+          </AppProvider>
+        </UserAuthProvider>
       </AdminAuthProvider>
     </QueryClientProvider>
   );

@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/firebase';
+import { useUserAuth } from '@/contexts/UserAuthContext';
 
 type Language = 'ar' | 'en';
 
@@ -36,6 +39,7 @@ const setStoredValue = <T,>(key: string, value: T): void => {
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user } = useUserAuth();
   const [language, setLanguage] = useState<Language>(() => 
     getStoredValue<Language>('language', 'ar')
   );
@@ -63,6 +67,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setStoredValue('favorites', favorites);
   }, [favorites]);
+
+  // Load and merge favorites from Firestore when user signs in
+  useEffect(() => {
+    if (!user?.uid) return;
+    let cancelled = false;
+    getDoc(doc(db, 'user_favorites', user.uid))
+      .then((snap) => {
+        if (cancelled) return;
+        const data = snap.data();
+        const remote = (data?.couponIds as string[] | undefined) || [];
+        setFavorites((prev) => [...new Set([...prev, ...remote])]);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [user?.uid]);
+
+  // Persist favorites to Firestore when user is signed in
+  useEffect(() => {
+    if (!user?.uid) return;
+    setDoc(doc(db, 'user_favorites', user.uid), {
+      couponIds: favorites,
+    }).catch(() => {});
+  }, [user?.uid, favorites]);
 
   useEffect(() => {
     if (selectedCountry) {

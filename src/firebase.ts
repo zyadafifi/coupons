@@ -3,13 +3,24 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { Capacitor } from "@capacitor/core";
 
+// Use env vars when set (e.g. different envs); fallback to hardcoded for backward compatibility
 const firebaseConfig = {
-  apiKey: "AIzaSyAmJl2sK5HG-aIc6T8M6xdqV991mAeQ7n4",
-  authDomain: "saving-b35f3.firebaseapp.com",
-  projectId: "saving-b35f3",
-  storageBucket: "saving-b35f3.firebasestorage.app",
-  messagingSenderId: "626636527932",
-  appId: "1:626636527932:web:4f387aba70b7e8753fa639",
+  apiKey:
+    import.meta.env.VITE_FIREBASE_API_KEY ||
+    "AIzaSyAmJl2sK5HG-aIc6T8M6xdqV991mAeQ7n4",
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ||
+    "saving-b35f3.firebaseapp.com",
+  projectId:
+    import.meta.env.VITE_FIREBASE_PROJECT_ID || "saving-b35f3",
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    "saving-b35f3.firebasestorage.app",
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "626636527932",
+  appId:
+    import.meta.env.VITE_FIREBASE_APP_ID ||
+    "1:626636527932:web:4f387aba70b7e8753fa639",
 };
 
 // Initialize Firebase

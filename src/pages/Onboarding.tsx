@@ -366,18 +366,29 @@ export default function Onboarding() {
             </Button>
           </div>
 
-          {/* Skip link */}
-          <button
-            type="button"
-            onClick={() => {
-              markLeadSubmitted();
-              navigate('/');
-            }}
-            className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors py-3 animate-slide-up"
+          {/* Sign up / Login link */}
+          <div
+            className="flex flex-col items-center gap-2 py-3 animate-slide-up"
             style={{ animationDelay: '0.8s' }}
           >
-            تخطي الآن
-          </button>
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="text-sm text-primary font-medium hover:underline"
+            >
+              تسجيل الدخول أو إنشاء حساب
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                markLeadSubmitted();
+                navigate('/');
+              }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              تخطي الآن
+            </button>
+          </div>
         </form>
       </div>
     </div>
